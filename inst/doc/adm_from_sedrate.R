@@ -8,6 +8,34 @@ knitr::opts_chunk$set(
 library(admtools)
 
 ## -----------------------------------------------------------------------------
+t_tp = function(){
+  # first tie point
+  t1 = rnorm(n = 1, mean = -20 , sd = 0.5)
+  
+  # second tie point
+  d1 = rbinom(n = 1, size = 2, prob = 0.5) # fair coin flip for mixture
+  if (d1 == 0){
+    t2 = rnorm(n = 1, mean =  - 5, sd = 0.1)
+  } else {
+    t2 = rnorm(n = 1, mean =  - 7, sd = 0.3)
+  }
+  return(c("t1" = t1, "t2" = t2))
+}
+
+## ----fig.show="hold", out.width="50%"-----------------------------------------
+no_of_samples = 10000
+# Evaluate timing of tie points
+hist(x = sapply(seq_len(no_of_samples), function(x) t_tp()["t1"]),
+     freq = FALSE,
+     xlab = "Time before present [Myr]",
+     main = "Timing of first tie point")
+hist(x = sapply(seq_len(no_of_samples), function(x) t_tp()["t2"]),
+     freq = FALSE,
+     xlab = "Time before present [Myr]",
+     main = "Timing of second tie point")
+
+
+## -----------------------------------------------------------------------------
 h_min = 10 # height of tie point 1
 h_max = 85 # height of tie point 2
 
@@ -20,34 +48,6 @@ h_tp = function(){
 ## -----------------------------------------------------------------------------
 #Evaluate stratigraphic positions of tie points
 h_tp()
-
-## -----------------------------------------------------------------------------
-t_tp = function(){
-  # first tie point
-  t1 = rnorm(n = 1, mean = 0, sd = 0.5)
-  
-  # second tie point
-  d1 = rbinom(n = 1, size = 2, prob = 0.5) # fair coin flip for mixture
-  if (d1 == 0){
-    t2 = rnorm(n = 1, mean = 5, sd = 0.1)
-  } else {
-    t2 = rnorm(n = 1, mean = 7, sd = 0.3)
-  }
-  return(c("t1" = t1, "t2" = t2))
-}
-
-## ----fig.show="hold", out.width="50%"-----------------------------------------
-no_of_samples = 10000
-# Evaluate timing of tie points
-hist(x = sapply(seq_len(no_of_samples), function(x) t_tp()["t1"]),
-     freq = FALSE,
-     xlab = "Time [Myr]",
-     main = "Timing of first tie point")
-hist(x = sapply(seq_len(no_of_samples), function(x) t_tp()["t2"]),
-     freq = FALSE,
-     xlab = "Time [Myr]",
-     main = "Timing of second tie point")
-
 
 ## -----------------------------------------------------------------------------
 # limits on sed. rates
