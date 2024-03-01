@@ -343,10 +343,11 @@ Sedimentation Rates</h1>
 
 
 
+<pre><code>#&gt; Loading required package: ape</code></pre>
 <div id="introduction" class="section level1">
 <h1>Introduction</h1>
 <p>This vignette explains how to estimate age-depth models (ADMs) from
-sedimentation rates using the function
+sedimentation rates and tie points using the function
 <code>sedrate_to_multiadm</code></p>
 <div id="inputs" class="section level2">
 <h2>Inputs</h2>
@@ -367,176 +368,270 @@ estimation procedure:</p>
 <ul>
 <li><p><code>h</code> : vector of heights where the ADM is
 determined</p></li>
-<li><p><code>no_of_rep</code>: integer, number of age-depth models
-determined</p></li>
+<li><p><code>no_of_rep</code>: integer, number of runs</p></li>
 </ul>
+<p>Additional parameters that determine the numeric behavior of the
+integration method used are <code>subdivisions</code> and
+<code>stop.on.error</code>. The parameters <code>T_unit</code> and
+<code>L_unit</code> can be used to associate time and length units with
+the generated age-depth model.</p>
 </div>
-<div id="coding-user-knowledge" class="section level2">
-<h2>Coding user knowledge</h2>
+<div id="example" class="section level2">
+<h2>Example</h2>
+<p>We construct an age depth model for a section of 10 m thickness where
+upper and lower bounds on sedimentation rates are available.</p>
+<div id="data" class="section level3">
+<h3>Data</h3>
+<p>We start by defining the section as well as lower and upper bounds on
+sedimentation rates</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>h_min <span class="ot">=</span> <span class="dv">2</span> <span class="co"># lower boundary of the section</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a>h_max <span class="ot">=</span> <span class="dv">10</span> <span class="co"># upper boundary of the section</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>T_unit <span class="ot">=</span> <span class="st">&quot;Myr&quot;</span></span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>L_unit <span class="ot">=</span> <span class="st">&quot;m&quot;</span></span></code></pre></div>
+<p>We want to know the age-depth model every 10 cm, so we define</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>h <span class="ot">=</span> <span class="fu">seq</span>(h_min, h_max, <span class="at">by =</span> <span class="fl">0.1</span>)</span></code></pre></div>
+</div>
 <div id="tie-points" class="section level3">
 <h3>Tie points</h3>
+<p>We assume there is one tie point in the section at 5 m height, and
+its mean age is 66 years with a standard deviation of 0.25 Myr</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>h1 <span class="ot">=</span> <span class="dv">5</span></span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>mean_age <span class="ot">=</span> <span class="sc">-</span><span class="dv">66</span></span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>sd <span class="ot">=</span> <span class="fl">0.25</span> </span></code></pre></div>
+<p>Then the tie point timing is given by</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a>t_tp <span class="ot">=</span> <span class="fu">tp_time_norm</span>(<span class="at">mean =</span> mean_age, <span class="at">sd =</span> sd)</span></code></pre></div>
+<p>and the tie point height is given by</p>
+<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a>h_tp <span class="ot">=</span> <span class="fu">tp_height_det</span>(<span class="at">heights =</span> h1)</span></code></pre></div>
+<p>Every time <code>t_tp</code> is evaluated, it returns one possible
+time of the tie points. Similarly, every time <code>h_tp</code> is
+evaluated, it returns the stratigraphic position of the tie point (which
+is deterministic in this case):</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">h_tp</span>()</span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="co">#&gt; [1] 5</span></span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">t_tp</span>()</span>
+<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a><span class="co">#&gt; [1] -65.74947</span></span></code></pre></div>
+</div>
+<div id="sedimentation-rates" class="section level3">
+<h3>Sedimentation rates</h3>
+<p>We assume the following upper and lower limits for sedimentation
+rates:</p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>sedrate_max_y <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">2</span>,<span class="dv">5</span>,<span class="dv">8</span>,<span class="dv">5</span>)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>sedrate_max_x <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">4</span>,<span class="dv">6</span>,<span class="dv">10</span>)</span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>sedrate_min_y <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">1</span>,<span class="dv">1</span>,<span class="dv">7</span>,<span class="fl">0.5</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>sedrate_min_x <span class="ot">=</span> sedrate_max_x </span></code></pre></div>
+<p>Here, <code>sedrate_max_y[i]</code> is the upper limit on
+sedimentation rate at <code>sedrate_max_x[i]</code> (mutatis mutandis
+for <code>sedrate_min</code>). Between these points, we assume linear
+interpolation. This is done by the function
+<code>sed_rate_gen_from_bounds</code>:</p>
+<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>sedrate <span class="ot">=</span> <span class="fu">sed_rate_gen_from_bounds</span>(<span class="at">h_l =</span> sedrate_min_x,</span>
+<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>                                   <span class="at">s_l =</span> sedrate_min_y,</span>
+<span id="cb9-3"><a href="#cb9-3" tabindex="-1"></a>                                   <span class="at">h_u =</span> sedrate_max_x,</span>
+<span id="cb9-4"><a href="#cb9-4" tabindex="-1"></a>                                   <span class="at">s_u =</span> sedrate_max_y,</span>
+<span id="cb9-5"><a href="#cb9-5" tabindex="-1"></a>                                   <span class="at">rate =</span> <span class="dv">1</span>)</span></code></pre></div>
+<p>Because the sedimentation rates are uncertain, functions returned by
+<code>sedrate</code> will differ each time the function is evaluated. As
+an example, we plot three different sample paths (realizations) of the
+sedimentation rate through the section:</p>
+<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="cn">NULL</span>,</span>
+<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">range</span>(h),</span>
+<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(<span class="fu">c</span>(sedrate_max_y))),</span>
+<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Height [m]&quot;</span>,</span>
+<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Sedimentation Rate [m/Myr]&quot;</span>)</span>
+<span id="cb10-6"><a href="#cb10-6" tabindex="-1"></a>no_sedrates <span class="ot">=</span> <span class="dv">3</span></span>
+<span id="cb10-7"><a href="#cb10-7" tabindex="-1"></a>cols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;black&quot;</span>)</span>
+<span id="cb10-8"><a href="#cb10-8" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(no_sedrates)){</span>
+<span id="cb10-9"><a href="#cb10-9" tabindex="-1"></a>  sedrate_sample <span class="ot">=</span> <span class="fu">sedrate</span>()</span>
+<span id="cb10-10"><a href="#cb10-10" tabindex="-1"></a>  <span class="fu">lines</span>(h, <span class="fu">sedrate_sample</span>(h), <span class="at">lwd =</span> <span class="dv">3</span>, <span class="at">col =</span> cols[i])</span>
+<span id="cb10-11"><a href="#cb10-11" tabindex="-1"></a>}</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>These sedimentation rates assume sedimentation rates are drawn from a
+uniform distribution between the upper and lower limits of sedimentation
+rate provided by the user. This is done at random locations determined
+according to a Poisson point process with rate <code>rate</code>.</p>
+</div>
+<div id="estimate-age-depth-model" class="section level3">
+<h3>Estimate age depth model</h3>
+<p>With tie points and sedimentation rates specified, we can now
+estimate the age depth model using</p>
+<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a>my_adm <span class="ot">=</span> <span class="fu">sedrate_to_multiadm</span>(<span class="at">h_tp =</span> h_tp,</span>
+<span id="cb11-2"><a href="#cb11-2" tabindex="-1"></a>                             <span class="at">t_tp =</span> t_tp,</span>
+<span id="cb11-3"><a href="#cb11-3" tabindex="-1"></a>                             <span class="at">sed_rate_gen =</span> sedrate,</span>
+<span id="cb11-4"><a href="#cb11-4" tabindex="-1"></a>                             <span class="at">h =</span> h,</span>
+<span id="cb11-5"><a href="#cb11-5" tabindex="-1"></a>                             <span class="at">T_unit =</span> T_unit,</span>
+<span id="cb11-6"><a href="#cb11-6" tabindex="-1"></a>                             <span class="at">L_unit =</span> L_unit)</span></code></pre></div>
+<p>The age-depth model can be plotted using</p>
+<div class="sourceCode" id="cb12"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb12-1"><a href="#cb12-1" tabindex="-1"></a><span class="fu">plot</span>(my_adm)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+</div>
+<div id="coding-tie-points" class="section level2">
+<h2>Coding tie points</h2>
+<div id="background" class="section level3">
+<h3>Background</h3>
 <p>Times and heights of tie points are coded via the functions
 <code>t_tp</code> (timing) and <code>h_tp</code> (height) that take no
 inputs. They serve as wrappers around user-defined procedures that
 reflect uncertainties around tie points. Every time <code>t_tp</code>
 and <code>h_tp</code> are evaluated, they return possible values for the
-tie points. Writing these functions requires some effort, but it allows
-the user to hand over arbitrarily complex uncertainties of the tie
-points to the <code>sedrate_to_multiadm</code> function.</p>
-<p>The function for the timing of the tie points must return a named
-vector with names “t1” (timing of first tie point) and “t2” (timing of
-second tie point). “t1” must be smaller than “t2”.</p>
-<p>For this example, I assume that the first tie point follows a normal
-distribution with mean - 20 Myr before present and standard deviation
-0.5 Myr. The timing of the second tie point is bimodal and given as an
-equal mixture of two normal distributions with means - 5 and - 7 Myr
-years before present and standard deviations of 0.1 and 0.3 Myr years.
-This is implemented as follows in <code>t_tp</code>:</p>
-<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a>t_tp <span class="ot">=</span> <span class="cf">function</span>(){</span>
-<span id="cb1-2"><a href="#cb1-2" tabindex="-1"></a>  <span class="co"># first tie point</span></span>
-<span id="cb1-3"><a href="#cb1-3" tabindex="-1"></a>  t1 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">1</span>, <span class="at">mean =</span> <span class="sc">-</span><span class="dv">20</span> , <span class="at">sd =</span> <span class="fl">0.5</span>)</span>
-<span id="cb1-4"><a href="#cb1-4" tabindex="-1"></a>  </span>
-<span id="cb1-5"><a href="#cb1-5" tabindex="-1"></a>  <span class="co"># second tie point</span></span>
-<span id="cb1-6"><a href="#cb1-6" tabindex="-1"></a>  d1 <span class="ot">=</span> <span class="fu">rbinom</span>(<span class="at">n =</span> <span class="dv">1</span>, <span class="at">size =</span> <span class="dv">2</span>, <span class="at">prob =</span> <span class="fl">0.5</span>) <span class="co"># fair coin flip for mixture</span></span>
-<span id="cb1-7"><a href="#cb1-7" tabindex="-1"></a>  <span class="cf">if</span> (d1 <span class="sc">==</span> <span class="dv">0</span>){</span>
-<span id="cb1-8"><a href="#cb1-8" tabindex="-1"></a>    t2 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">1</span>, <span class="at">mean =</span>  <span class="sc">-</span> <span class="dv">5</span>, <span class="at">sd =</span> <span class="fl">0.1</span>)</span>
-<span id="cb1-9"><a href="#cb1-9" tabindex="-1"></a>  } <span class="cf">else</span> {</span>
-<span id="cb1-10"><a href="#cb1-10" tabindex="-1"></a>    t2 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">1</span>, <span class="at">mean =</span>  <span class="sc">-</span> <span class="dv">7</span>, <span class="at">sd =</span> <span class="fl">0.3</span>)</span>
-<span id="cb1-11"><a href="#cb1-11" tabindex="-1"></a>  }</span>
-<span id="cb1-12"><a href="#cb1-12" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">c</span>(<span class="st">&quot;t1&quot;</span> <span class="ot">=</span> t1, <span class="st">&quot;t2&quot;</span> <span class="ot">=</span> t2))</span>
-<span id="cb1-13"><a href="#cb1-13" tabindex="-1"></a>}</span></code></pre></div>
-<p>Sampling from <code>t_tp</code> yields the following empirical
-distribution for the tie points:</p>
-<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a>no_of_samples <span class="ot">=</span> <span class="dv">10000</span></span>
-<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># Evaluate timing of tie points</span></span>
-<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a><span class="fu">hist</span>(<span class="at">x =</span> <span class="fu">sapply</span>(<span class="fu">seq_len</span>(no_of_samples), <span class="cf">function</span>(x) <span class="fu">t_tp</span>()[<span class="st">&quot;t1&quot;</span>]),</span>
-<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>     <span class="at">freq =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Time before present [Myr]&quot;</span>,</span>
-<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Timing of first tie point&quot;</span>)</span>
-<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a><span class="fu">hist</span>(<span class="at">x =</span> <span class="fu">sapply</span>(<span class="fu">seq_len</span>(no_of_samples), <span class="cf">function</span>(x) <span class="fu">t_tp</span>()[<span class="st">&quot;t2&quot;</span>]),</span>
-<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>     <span class="at">freq =</span> <span class="cn">FALSE</span>,</span>
-<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Time before present [Myr]&quot;</span>,</span>
-<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>     <span class="at">main =</span> <span class="st">&quot;Timing of second tie point&quot;</span>)</span></code></pre></div>
-<p><img src="data:image/png;base64,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" width="50%" /><img src="data:image/png;base64,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" width="50%" /></p>
-<p>The function for the heights of the tie points must return a named
-vector with entries <code>h1</code> and <code>h2</code>, corresponding
-to the heights of the first (lower) and second (upper) tie point.
-<code>h1</code> must be smaller than <code>h2</code>.</p>
-<p>For this example, I assume the stratigraphic positions of the tie
-points is known without uncertainty, and are at 10 and 85 m
-stratigraphic height.</p>
-<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>h_min <span class="ot">=</span> <span class="dv">10</span> <span class="co"># height of tie point 1</span></span>
-<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>h_max <span class="ot">=</span> <span class="dv">85</span> <span class="co"># height of tie point 2</span></span></code></pre></div>
+tie points. Conceptually, both <code>t_tp</code>and <code>h_tp</code>
+are user implemented random number generators that draw from the
+distributions of tie points. Writing these functions requires some
+effort, but it allows the user to hand over arbitrarily complex
+uncertainties of the tie points to the
+<code>strat_cont_to_multiadm</code> function.</p>
+</div>
+<div id="wrappers" class="section level3">
+<h3>Wrappers</h3>
+<p>Multiple wrappers are available to simplify coding tie points:</p>
+<ul>
+<li><p><code>tp_height_det</code> for specifying deterministic
+stratigraphic heights</p></li>
+<li><p><code>tp_time_floating_scale</code> to encode time tie points for
+floating time scale</p></li>
+<li><p><code>tp_time_norm</code> for normally distributed tie points in
+time</p></li>
+</ul>
+</div>
+<div id="manually-coding-tie-points" class="section level3">
+<h3>Manually coding tie points</h3>
+<p>Both <code>t_tp</code> and <code>h_tp</code> must return strictly
+ordered numeric vectors of times/heights. This means that it is the
+users responsibility to avoid inversions of times/heights.</p>
+<p>As an example, I assume the stratigraphic positions of the tie points
+are known without uncertainty, and are at 10 and 20 m stratigraphic
+height.</p>
+<div class="sourceCode" id="cb13"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" tabindex="-1"></a>h_min <span class="ot">=</span> <span class="dv">10</span> <span class="co"># stratigraphic height of lower tie point [m]</span></span>
+<span id="cb13-2"><a href="#cb13-2" tabindex="-1"></a>h_max <span class="ot">=</span> <span class="dv">20</span> <span class="co"># stratigraphic height of upper tie point [m]</span></span></code></pre></div>
 <p><code>h_tp</code> is then implemented as follows:</p>
-<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a>h_tp <span class="ot">=</span> <span class="cf">function</span>(){</span>
-<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">c</span>(<span class="st">&quot;h1&quot;</span> <span class="ot">=</span> h_min, </span>
-<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>           <span class="st">&quot;h2&quot;</span> <span class="ot">=</span> h_max))</span>
-<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb14"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb14-1"><a href="#cb14-1" tabindex="-1"></a>h_tp <span class="ot">=</span> <span class="cf">function</span>(){</span>
+<span id="cb14-2"><a href="#cb14-2" tabindex="-1"></a>  <span class="fu">return</span>(<span class="fu">c</span>(h_min, h_max))</span>
+<span id="cb14-3"><a href="#cb14-3" tabindex="-1"></a>}</span></code></pre></div>
 <p>When evaluated, this function returns the stratigraphic positions of
 the tie points:</p>
-<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="co">#Evaluate stratigraphic positions of tie points</span></span>
-<span id="cb5-2"><a href="#cb5-2" tabindex="-1"></a><span class="fu">h_tp</span>()</span>
-<span id="cb5-3"><a href="#cb5-3" tabindex="-1"></a><span class="co">#&gt; h1 h2 </span></span>
-<span id="cb5-4"><a href="#cb5-4" tabindex="-1"></a><span class="co">#&gt; 10 85</span></span></code></pre></div>
-<p>This is a lot of effort to simply encode fixed stratigraphic
-positions of tie points. However, it allows to implement arbitrary
-uncertainties on the position of the tie points if needed.</p>
+<div class="sourceCode" id="cb15"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" tabindex="-1"></a><span class="fu">h_tp</span>()</span>
+<span id="cb15-2"><a href="#cb15-2" tabindex="-1"></a><span class="co">#&gt; [1] 10 20</span></span></code></pre></div>
+<p>For a more complex example, I assume that the timing of the first tie
+point follows a normal distribution with mean 0 and standard deviation
+0.5. For the second tie point, only maximum and minimum time is
+available. Due to the lack of information, I assume a uniform
+distribution between the minimum (9) and the maximum (11). This is
+implemented as follows in <code>t_tp</code>:</p>
+<div class="sourceCode" id="cb16"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb16-1"><a href="#cb16-1" tabindex="-1"></a>t_tp <span class="ot">=</span> <span class="cf">function</span>() {</span>
+<span id="cb16-2"><a href="#cb16-2" tabindex="-1"></a>  <span class="cf">repeat</span>{ </span>
+<span id="cb16-3"><a href="#cb16-3" tabindex="-1"></a>    <span class="co"># timing first tie point</span></span>
+<span id="cb16-4"><a href="#cb16-4" tabindex="-1"></a>    t1 <span class="ot">=</span> <span class="fu">rnorm</span>(<span class="at">n =</span> <span class="dv">1</span>, <span class="at">mean =</span> <span class="dv">0</span>, <span class="at">sd =</span> <span class="fl">0.5</span>)</span>
+<span id="cb16-5"><a href="#cb16-5" tabindex="-1"></a>    <span class="co"># timing second tie point</span></span>
+<span id="cb16-6"><a href="#cb16-6" tabindex="-1"></a>    t2 <span class="ot">=</span> <span class="fu">runif</span>(<span class="at">n =</span> <span class="dv">1</span>, <span class="at">min =</span> <span class="dv">9</span>, <span class="at">max =</span> <span class="dv">11</span>)</span>
+<span id="cb16-7"><a href="#cb16-7" tabindex="-1"></a>    <span class="cf">if</span> (t1 <span class="sc">&lt;</span> t2){ <span class="co"># if order is correct, return values</span></span>
+<span id="cb16-8"><a href="#cb16-8" tabindex="-1"></a>        <span class="fu">return</span>(<span class="fu">c</span>(t1, t2))</span>
+<span id="cb16-9"><a href="#cb16-9" tabindex="-1"></a>    }</span>
+<span id="cb16-10"><a href="#cb16-10" tabindex="-1"></a>  }</span>
+<span id="cb16-11"><a href="#cb16-11" tabindex="-1"></a>}</span></code></pre></div>
+<div class="sourceCode" id="cb17"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" tabindex="-1"></a><span class="fu">t_tp</span>() <span class="co"># evaluating the function returns a random pair of times drawn from the specified distribution</span></span>
+<span id="cb17-2"><a href="#cb17-2" tabindex="-1"></a><span class="co">#&gt; [1] -0.2982402 10.1211065</span></span></code></pre></div>
+<p>Using Myr as time unit, the distribution of times for the tie points
+is as follows:</p>
+<p><img src="data:image/png;base64,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" /><img src="data:image/png;base64,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" /></p>
 </div>
-<div id="coding-sedimentation-rates" class="section level3">
-<h3>Coding Sedimentation Rates</h3>
-<p>Sedimentation rates are specified via a function
-<code>sed_rate_gen</code> that takes no inputs. It serves as wrapper for
-user-defined procedures that specify uncertainties in sedimentation
-rates. <code>sed_rate_gen</code> is a “function factory”: every time it
-is evaluated, it returns another function that is one potential
-sedimentation rate scenario. Writing this function factory requires some
-effort, but it allows the user to specify how uncertainties of
-sedimentation rates are expressed in the section, and implement
-arbitrarily complex distributions. The idea behind this is that
-sedimentation rates are considered stochastic processes. Every time
-<code>sed_rate_gen</code> is evaluated, it returns one sample path from
-this process.</p>
-<p>The functions returned by <code>sed_rate_gen</code> must return
-strictly positive values - negative sedimentation rates can not be
-observed in the section.</p>
-<p>I use a simple sedimentation rate model, where only upper and lower
-bounds on sedimentation rates in the section are known. Between these
-limits, I assume a uniform distribution.</p>
-<div class="sourceCode" id="cb6"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb6-1"><a href="#cb6-1" tabindex="-1"></a><span class="co"># limits on sed. rates</span></span>
-<span id="cb6-2"><a href="#cb6-2" tabindex="-1"></a>lower_limit <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="dv">2</span>,<span class="fl">0.1</span>,<span class="dv">10</span>)</span>
-<span id="cb6-3"><a href="#cb6-3" tabindex="-1"></a>upper_limit <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">0.2</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">12</span>)</span>
-<span id="cb6-4"><a href="#cb6-4" tabindex="-1"></a></span>
-<span id="cb6-5"><a href="#cb6-5" tabindex="-1"></a><span class="co"># strat intervals where sed rates are defined</span></span>
-<span id="cb6-6"><a href="#cb6-6" tabindex="-1"></a>s <span class="ot">=</span> <span class="fu">c</span>(h_min <span class="sc">-</span> <span class="dv">1</span>, <span class="dv">30</span>,<span class="dv">75</span>, <span class="dv">80</span>, h_max <span class="sc">+</span> <span class="dv">1</span>)</span></code></pre></div>
+</div>
+<div id="coding-sedimentation-rates" class="section level2">
+<h2>Coding sedimentation rates</h2>
+<div id="background-1" class="section level3">
+<h3>Background</h3>
+<p>Mathematically, sedimentation rates are assumed to be stochastic
+processes. With each iteration of the estimation procedure, a sample
+path is generated from the stochastic processes. This sample path
+reflects one possible change of sedimentation rate in the section, given
+our uncertainties about it.</p>
+<p>Computationally, this is implemented using <em>function
+factories</em>, which are functions that return functions. A function
+factory defines a stochastic process, and each function <span class="math inline">\(f\)</span> generated by a function factory is a
+sample path. In turn, <span class="math inline">\(f(x)\)</span> returns
+the value of the sample path at <span class="math inline">\(x\)</span>
+.</p>
+<p>Here, function factories are used as complex random number
+generators: Instead of returning one or multiple random numbers, they
+return a random function.</p>
+</div>
+<div id="wrappers-1" class="section level3">
+<h3>Wrappers</h3>
+<p>Available wrappers to define sedimentation rates are</p>
+<ul>
+<li><p><code>sed_rate_gen_from_bounds</code> : generate sed. rate from
+upper and lower bounds on the sedimentation rate (see above)</p></li>
+<li><p><code>sed_rate_from_matrix</code>: specify sedimentation rate
+based on matrix, to be used in conjunction with
+<code>get_data_from_eTimeOpt</code></p></li>
+</ul>
+</div>
+<div id="manually-coding-sedimentation-rates" class="section level3">
+<h3>Manually coding sedimentation rates</h3>
+<p>Sedimentation rates must be coded as function factories, i.e.,
+functions that return functions. They must be able to take vector inputs
+and return a vector of the same length as output, and always return
+strictly positive values.</p>
+<p>As example, I use a simple sedimentation rate model, where only upper
+and lower bounds on sedimentation rates in the section are known.
+Between these limits, I assume a uniform distribution.</p>
+<div class="sourceCode" id="cb18"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb18-1"><a href="#cb18-1" tabindex="-1"></a>h_min <span class="ot">=</span> <span class="dv">10</span></span>
+<span id="cb18-2"><a href="#cb18-2" tabindex="-1"></a>h_max <span class="ot">=</span> <span class="dv">90</span></span>
+<span id="cb18-3"><a href="#cb18-3" tabindex="-1"></a><span class="co"># limits on sed. rates </span></span>
+<span id="cb18-4"><a href="#cb18-4" tabindex="-1"></a>lower_limit <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">0.1</span>,<span class="dv">2</span>,<span class="fl">0.1</span>,<span class="dv">10</span>) </span>
+<span id="cb18-5"><a href="#cb18-5" tabindex="-1"></a>upper_limit <span class="ot">=</span> <span class="fu">c</span>(<span class="fl">0.2</span>,<span class="dv">3</span>,<span class="dv">2</span>,<span class="dv">12</span>)  </span>
+<span id="cb18-6"><a href="#cb18-6" tabindex="-1"></a><span class="co"># strat intervals where sed rates are defined </span></span>
+<span id="cb18-7"><a href="#cb18-7" tabindex="-1"></a>s <span class="ot">=</span> <span class="fu">c</span>(h_min, <span class="dv">30</span>,<span class="dv">65</span>, <span class="dv">80</span>, h_max)</span></code></pre></div>
 <p>Based on these parameters, the sedimentation rate function factory is
 defined as follows:</p>
-<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="co"># define function factory</span></span>
-<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a>sed_rate_fun <span class="ot">=</span> <span class="cf">function</span>(){</span>
-<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a>  <span class="co"># draw sed rates from uniform distribution</span></span>
-<span id="cb7-4"><a href="#cb7-4" tabindex="-1"></a>  aa_1 <span class="ot">=</span> <span class="fu">c</span>(<span class="fu">runif</span>(<span class="dv">1</span>,lower_limit[<span class="dv">1</span>],upper_limit[<span class="dv">1</span>]),</span>
-<span id="cb7-5"><a href="#cb7-5" tabindex="-1"></a>         <span class="fu">runif</span>(<span class="dv">1</span>, lower_limit[<span class="dv">2</span>],upper_limit[<span class="dv">2</span>]),</span>
-<span id="cb7-6"><a href="#cb7-6" tabindex="-1"></a>         <span class="fu">runif</span>(<span class="dv">1</span>,lower_limit[<span class="dv">3</span>],upper_limit[<span class="dv">3</span>]),</span>
-<span id="cb7-7"><a href="#cb7-7" tabindex="-1"></a>         <span class="fu">runif</span>(<span class="dv">1</span>, lower_limit[<span class="dv">4</span>], upper_limit[<span class="dv">4</span>]))</span>
-<span id="cb7-8"><a href="#cb7-8" tabindex="-1"></a>  aa <span class="ot">=</span> <span class="fu">c</span>(aa_1, aa_1[<span class="dv">4</span>])</span>
-<span id="cb7-9"><a href="#cb7-9" tabindex="-1"></a>  <span class="co"># define sed rate &quot;realization&quot; based on samples from uniform distribution</span></span>
-<span id="cb7-10"><a href="#cb7-10" tabindex="-1"></a> sed_rate_fun <span class="ot">=</span> <span class="fu">approxfun</span>(<span class="at">x =</span> s,</span>
-<span id="cb7-11"><a href="#cb7-11" tabindex="-1"></a>                          <span class="at">y =</span> aa,</span>
-<span id="cb7-12"><a href="#cb7-12" tabindex="-1"></a>                          <span class="at">method =</span> <span class="st">&quot;constant&quot;</span>)</span>
-<span id="cb7-13"><a href="#cb7-13" tabindex="-1"></a> <span class="co"># return the function</span></span>
-<span id="cb7-14"><a href="#cb7-14" tabindex="-1"></a> <span class="fu">return</span>(sed_rate_fun)</span>
-<span id="cb7-15"><a href="#cb7-15" tabindex="-1"></a>}</span></code></pre></div>
-<p>To visualize, here are three sedimentation rates generated by the
-“sedimentation rate function factory” <code>sed_rate_fun</code>:</p>
-<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="cn">NULL</span>,</span>
-<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(h_min, h_max),</span>
-<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(upper_limit)),</span>
-<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Stratigraphic Height [m]&quot;</span>,</span>
-<span id="cb8-5"><a href="#cb8-5" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Sedimentation Rate&quot;</span>)</span>
-<span id="cb8-6"><a href="#cb8-6" tabindex="-1"></a></span>
-<span id="cb8-7"><a href="#cb8-7" tabindex="-1"></a>no_of_sedrates <span class="ot">=</span> <span class="dv">3</span> <span class="co"># no. of sed rates displayed</span></span>
-<span id="cb8-8"><a href="#cb8-8" tabindex="-1"></a>h <span class="ot">=</span> <span class="fu">seq</span>(h_min,h_max, <span class="at">by =</span> <span class="fl">0.1</span>) <span class="co"># strat. positions where sed rates are plotted</span></span>
-<span id="cb8-9"><a href="#cb8-9" tabindex="-1"></a></span>
-<span id="cb8-10"><a href="#cb8-10" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(no_of_sedrates)){</span>
-<span id="cb8-11"><a href="#cb8-11" tabindex="-1"></a>  <span class="co"># generate sed rate from the factory</span></span>
-<span id="cb8-12"><a href="#cb8-12" tabindex="-1"></a>  sed_rate_sample <span class="ot">=</span> <span class="fu">sed_rate_fun</span>()</span>
-<span id="cb8-13"><a href="#cb8-13" tabindex="-1"></a>  </span>
-<span id="cb8-14"><a href="#cb8-14" tabindex="-1"></a>  <span class="co"># plot sed rate in the section</span></span>
-<span id="cb8-15"><a href="#cb8-15" tabindex="-1"></a>  <span class="fu">lines</span>(h, <span class="fu">sed_rate_sample</span>(h))</span>
-<span id="cb8-16"><a href="#cb8-16" tabindex="-1"></a>}</span></code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb19"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" tabindex="-1"></a><span class="co"># define function factory </span></span>
+<span id="cb19-2"><a href="#cb19-2" tabindex="-1"></a>sed_rate_fun <span class="ot">=</span> <span class="cf">function</span>(){   </span>
+<span id="cb19-3"><a href="#cb19-3" tabindex="-1"></a>  <span class="co"># draw sed rates from uniform distribution  </span></span>
+<span id="cb19-4"><a href="#cb19-4" tabindex="-1"></a>  aa <span class="ot">=</span> <span class="fu">runif</span>(<span class="at">n =</span> <span class="fu">length</span>(lower_limit), <span class="at">min =</span> lower_limit, <span class="at">max =</span> upper_limit)   </span>
+<span id="cb19-5"><a href="#cb19-5" tabindex="-1"></a>  <span class="co"># define sed rate &quot;realization&quot; based on samples from uniform distribution </span></span>
+<span id="cb19-6"><a href="#cb19-6" tabindex="-1"></a>  sed_rate_fun <span class="ot">=</span> <span class="fu">approxfun</span>(<span class="at">x =</span> s, </span>
+<span id="cb19-7"><a href="#cb19-7" tabindex="-1"></a>                           <span class="at">y =</span> <span class="fu">c</span>(aa, aa[<span class="fu">length</span>(aa)]), </span>
+<span id="cb19-8"><a href="#cb19-8" tabindex="-1"></a>                           <span class="at">method =</span> <span class="st">&quot;constant&quot;</span>, </span>
+<span id="cb19-9"><a href="#cb19-9" tabindex="-1"></a>                           <span class="at">rule =</span> <span class="dv">2</span>,  </span>
+<span id="cb19-10"><a href="#cb19-10" tabindex="-1"></a>                          <span class="at">f =</span> <span class="dv">1</span>) </span>
+<span id="cb19-11"><a href="#cb19-11" tabindex="-1"></a>  <span class="fu">return</span>(sed_rate_fun)</span>
+<span id="cb19-12"><a href="#cb19-12" tabindex="-1"></a>}</span></code></pre></div>
+<p>Note that the inner function is a function of one variable (height),
+while the outer function takes no arguments - it simply returns the
+inner function. To visualize this, let’s plot three sedimentation rates
+generated by the “sedimentation rate function factory”
+<code>sed_rate_fun</code>:</p>
+<div class="sourceCode" id="cb20"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb20-1"><a href="#cb20-1" tabindex="-1"></a><span class="fu">plot</span>(<span class="cn">NULL</span>,</span>
+<span id="cb20-2"><a href="#cb20-2" tabindex="-1"></a>     <span class="at">xlim =</span> <span class="fu">c</span>(h_min, h_max),</span>
+<span id="cb20-3"><a href="#cb20-3" tabindex="-1"></a>     <span class="at">ylim =</span> <span class="fu">c</span>(<span class="dv">0</span>, <span class="fu">max</span>(upper_limit)),</span>
+<span id="cb20-4"><a href="#cb20-4" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;Stratigraphic Height [m]&quot;</span>,</span>
+<span id="cb20-5"><a href="#cb20-5" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;Sedimentation Rate&quot;</span>)</span>
+<span id="cb20-6"><a href="#cb20-6" tabindex="-1"></a></span>
+<span id="cb20-7"><a href="#cb20-7" tabindex="-1"></a>no_of_sedrates <span class="ot">=</span> <span class="dv">3</span> <span class="co"># no. of sed rates displayed</span></span>
+<span id="cb20-8"><a href="#cb20-8" tabindex="-1"></a>h <span class="ot">=</span> <span class="fu">seq</span>(h_min,h_max, <span class="at">by =</span> <span class="fl">0.1</span>) <span class="co"># strat. positions where sed rates are plotted</span></span>
+<span id="cb20-9"><a href="#cb20-9" tabindex="-1"></a>cols <span class="ot">=</span> <span class="fu">c</span>(<span class="st">&quot;red&quot;</span>, <span class="st">&quot;blue&quot;</span>, <span class="st">&quot;black&quot;</span>)</span>
+<span id="cb20-10"><a href="#cb20-10" tabindex="-1"></a><span class="cf">for</span> (i <span class="cf">in</span> <span class="fu">seq_len</span>(no_of_sedrates)){</span>
+<span id="cb20-11"><a href="#cb20-11" tabindex="-1"></a>  <span class="co"># generate sed rate from the factory</span></span>
+<span id="cb20-12"><a href="#cb20-12" tabindex="-1"></a>  sed_rate_sample <span class="ot">=</span> <span class="fu">sed_rate_fun</span>()</span>
+<span id="cb20-13"><a href="#cb20-13" tabindex="-1"></a>  </span>
+<span id="cb20-14"><a href="#cb20-14" tabindex="-1"></a>  <span class="co"># plot sed rate in the section</span></span>
+<span id="cb20-15"><a href="#cb20-15" tabindex="-1"></a>  <span class="fu">lines</span>(h, <span class="fu">sed_rate_sample</span>(h), <span class="at">col =</span> cols[i])</span>
+<span id="cb20-16"><a href="#cb20-16" tabindex="-1"></a>}</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
 <p>All sedimentation rates generated by <code>sed_rate_fun</code> will
 be different, because they are determined by random numbers.</p>
-</div>
-<div id="estimating-the-age-depth-models" class="section level3">
-<h3>Estimating the Age-Depth Models</h3>
-<p>The function <code>sedrate_to_multiadm</code> estimates the age-depth
-model from the inputs. Here, I determine the age-depth models every
-meter, and generate 10 ADMs</p>
-<div class="sourceCode" id="cb9"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" tabindex="-1"></a>h <span class="ot">=</span> <span class="fu">seq</span>(h_min,h_max, <span class="at">by =</span> <span class="dv">1</span>) <span class="co"># strat. positions where ADMs are estimated</span></span>
-<span id="cb9-2"><a href="#cb9-2" tabindex="-1"></a>no_of_rep <span class="ot">=</span> <span class="dv">10</span> <span class="co"># no. of ADMs estimated</span></span></code></pre></div>
-<div class="sourceCode" id="cb10"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb10-1"><a href="#cb10-1" tabindex="-1"></a>my_adm <span class="ot">=</span> <span class="fu">sedrate_to_multiadm</span>(<span class="at">h_tp =</span> <span class="fu">h_tp</span>(),</span>
-<span id="cb10-2"><a href="#cb10-2" tabindex="-1"></a>                             <span class="at">t_tp =</span> <span class="fu">t_tp</span>(),</span>
-<span id="cb10-3"><a href="#cb10-3" tabindex="-1"></a>                             <span class="at">sed_rate_gen =</span> sed_rate_fun,</span>
-<span id="cb10-4"><a href="#cb10-4" tabindex="-1"></a>                             <span class="at">h =</span> h,</span>
-<span id="cb10-5"><a href="#cb10-5" tabindex="-1"></a>                             <span class="at">no_of_rep =</span> no_of_rep)</span></code></pre></div>
-<p>It generates a portfolio of age-depth models combined into the
-variable <code>madm</code> (multi-adm). <code>madm</code> is an object
-of class multiadm.</p>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
-<p>These are 10 age-depth models generated by the
-<code>sedrate_to_adm</code> function, which are all equally likely
-candidates for the age-depth relationship in the section. Running
-summary statistics on large number of age-depth models (increasing the
-<code>no_of_rep</code> input variable) gives an assessment of the
-uncertainties of the age-depth relationship. This can be used to
-generate the classic envelopes of uncertainty (95 % CI).</p>
 </div>
 </div>
 <div id="further-information" class="section level2">
 <h2>Further information</h2>
 <p>For information on estimating age-depth models from tracer contents
 of rocks and sediments, see</p>
-<div class="sourceCode" id="cb11"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" tabindex="-1"></a><span class="fu">vignette</span>(<span class="st">&quot;adm_from_trace_cont&quot;</span>)</span></code></pre></div>
+<div class="sourceCode" id="cb21"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" tabindex="-1"></a><span class="fu">vignette</span>(<span class="st">&quot;adm_from_trace_cont&quot;</span>)</span></code></pre></div>
+<p>For an overview of the structure of the <code>admtools</code> package
+and the classes used therein see</p>
+<div class="sourceCode" id="cb22"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb22-1"><a href="#cb22-1" tabindex="-1"></a><span class="fu">vignette</span>(<span class="st">&quot;admtools_doc&quot;</span>)</span></code></pre></div>
+<p>For an overview over all available vignettes for the
+<code>admtools</code> package use</p>
+<div class="sourceCode" id="cb23"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" tabindex="-1"></a><span class="fu">browseVignettes</span>(<span class="at">package =</span> <span class="st">&quot;admtools&quot;</span>)</span></code></pre></div>
 </div>
 </div>
 

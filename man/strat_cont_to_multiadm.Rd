@@ -2,7 +2,7 @@
 % Please edit documentation in R/strat_cont_to_multiadm.R
 \name{strat_cont_to_multiadm}
 \alias{strat_cont_to_multiadm}
-\title{estimate age-depth model from stratigraphic contents}
+\title{estimate age-depth model from tracer}
 \usage{
 strat_cont_to_multiadm(
   h_tp,
@@ -10,27 +10,39 @@ strat_cont_to_multiadm(
   strat_cont_gen,
   time_cont_gen,
   h,
-  no_of_rep = 100
+  no_of_rep = 100L,
+  subdivisions = 100L,
+  stop.on.error = TRUE,
+  T_unit = NULL,
+  L_unit = NULL
 )
 }
 \arguments{
-\item{h_tp}{function generating height tie poitns}
+\item{h_tp}{function, returning tie point heights}
 
-\item{t_tp}{function generating time tie points}
+\item{t_tp}{function, returning tie points times}
 
-\item{strat_cont_gen}{function, generating stratigraphic contents}
+\item{strat_cont_gen}{function, describing tracer data observed in the section}
 
-\item{time_cont_gen}{function, generating the hypothesis on content input in time}
+\item{time_cont_gen}{function, describing tracer changes in time}
 
-\item{h}{heights where the adm is evaluated}
+\item{h}{numeric vector, heights where the age depth model is described}
 
-\item{no_of_rep}{integer, number of repetititons}
+\item{no_of_rep}{integer, number of age depth models generated}
+
+\item{subdivisions}{integer, max no. of subintervals used by integration procedure. passed to \emph{integrate}, see ?stats::integrate for details}
+
+\item{stop.on.error}{logical passed to \emph{integrate}, see ?stats::integrate for details}
+
+\item{T_unit}{NULL or character, time unit}
+
+\item{L_unit}{NULL or character, length unit}
 }
 \value{
 Object of class multiadm
 }
 \description{
-estimate age-depth model from stratigraphic contents
+Estimates age-depth models by comparing observed tracer values in a section with assumptions on tracer flux in time. See \code{vignette("adm_from_trace_cont")} for a full example.
 }
 \examples{
 \dontrun{

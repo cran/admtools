@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<meta name="author" content="Niklas Hohmann" />
+
+
+<title>Structure and classes of the admtools package</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Structure and classes of the admtools
+package</h1>
+<h4 class="author">Niklas Hohmann</h4>
+
+
+
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(admtools)</span></code></pre></div>
+<div id="introduction" class="section level1">
+<h1>Introduction</h1>
+<p>This vignette provides an overview of the larger scale structure of
+the <code>admtools</code> package and the classes used therein.</p>
+<div id="s3-classes" class="section level2">
+<h2>S3 Classes</h2>
+<div id="s3-class-adm" class="section level3">
+<h3>S3 class <code>adm</code></h3>
+<div id="description" class="section level4">
+<h4>Description</h4>
+<p>The S3 class <code>adm</code> represents <strong>a</strong>ge
+<strong>d</strong>epth <strong>m</strong>odels. Structurally, they are
+lists with five fields:</p>
+<ul>
+<li><p><code>t</code> : numeric vector, time points</p></li>
+<li><p><code>h</code> : numeric vectors, heights</p></li>
+<li><p><code>destr</code>: logical vector, is the interval
+destructive</p></li>
+<li><p><code>T_unit</code> : <code>NULL</code> or a string, time
+unit</p></li>
+<li><p><code>L_unit</code> : <code>NULL</code> or a string, length
+unit</p></li>
+</ul>
+<p><code>h[i]</code> is the height at time <code>t[i]</code>.
+<code>h</code> and <code>t</code> must be of same length and have at
+least 2 elements, <code>t</code> must be strictly increasing and
+<code>h</code> must be nondecreasing. <code>length(destr)</code> must be
+identical to <code>length(t) - 1</code>. <code>destr[i] == TRUE</code>
+indicates that the time interval from <code>t[i]</code> to
+<code>t[i+1]</code> is destructive and no information is preserved.
+Whether tie points are considered destructive is determined by the
+function <code>is_destructive</code>. Geologically,
+<code>destr[i] == TRUE</code> should imply <code>h[i] == h[i+1]</code> ,
+as no sediment is accumulated during hiatuses.</p>
+</div>
+<div id="construction" class="section level4">
+<h4>Construction</h4>
+<p>The following functions construct <code>adm</code> objects:</p>
+<ul>
+<li><code>tp_to_adm</code> for construction from tie points</li>
+<li><code>sac_to_adm</code> for construction from sediment accumulation
+curves <code>sac</code></li>
+<li><code>split_multiadm</code> for extraction from multiple age-depth
+models <code>multiadm</code></li>
+</ul>
+</div>
+<div id="logic" class="section level4">
+<h4>Logic</h4>
+<p>The following functions examine the logic of <code>adm</code>
+objects:</p>
+<ul>
+<li><code>is_adm</code> to check for validity of an adm object</li>
+</ul>
+</div>
+<div id="representation" class="section level4">
+<h4>Representation</h4>
+<p>The following functions yield a representation of <code>adm</code>
+objects:</p>
+<ul>
+<li><code>plot.adm</code> for plotting</li>
+<li><code>print.adm</code> for printing to the console</li>
+<li><code>summary.adm</code> to provide a quick summary of an
+object</li>
+</ul>
+</div>
+<div id="modification" class="section level4">
+<h4>Modification</h4>
+<p>The following functions modify <code>adm</code> objects:</p>
+<ul>
+<li><code>set_L_unit</code> and <code>set_T_unit</code> to change
+units</li>
+</ul>
+</div>
+<div id="extracting-information" class="section level4">
+<h4>Extracting information</h4>
+<p>The following functions extract information from <code>adm</code>
+objects:</p>
+<ul>
+<li><code>condensation</code> and <code>condensation_fun</code> to
+extract condensation</li>
+<li><code>get_L_unit</code> and <code>get_T_unit</code> to extract
+data</li>
+<li><code>get_completeness</code> and
+<code>get_incompleteness</code></li>
+<li><code>get_height</code></li>
+<li><code>get_time</code></li>
+<li><code>get_hiat_duration</code></li>
+<li><code>get_hiat_list</code></li>
+<li><code>get_hiat_no</code></li>
+<li><code>get_hiat_pos</code></li>
+<li><code>get_total_duration</code></li>
+<li><code>get_total_thickness</code></li>
+<li><code>is_destructive</code></li>
+<li><code>sed_rate_l</code> and <code>sed_rate_l_fun</code> to extract
+sedimentation rate in height domain</li>
+<li><code>sed_rate_t</code> and <code>sed_rate_t_fun</code> to extract
+sedimentation rate in time domain</li>
+</ul>
+</div>
+<div id="transformation-into-other-s3-classes" class="section level4">
+<h4>Transformation into other S3 classes</h4>
+<p>The following functions transform <code>adm</code> objects into other
+S3 classes:</p>
+<ul>
+<li><code>merge_adm_to_multiadm</code> into <code>multiamd</code></li>
+<li><code>add_adm_to_multiadm</code> to add <code>adm</code> to
+<code>multiadm</code></li>
+</ul>
+</div>
+</div>
+<div id="s3-class-sac" class="section level3">
+<h3>S3 class <code>sac</code></h3>
+<div id="description-1" class="section level4">
+<h4>Description</h4>
+<p>The S3 class <code>sac</code> represents <strong>s</strong>ediment
+<strong>a</strong>ccumulation <strong>c</strong>urves. Structurally,
+they are lists with four fields:</p>
+<ul>
+<li><code>t</code> : numeric vector, time points</li>
+<li><code>h</code> : numeric vectors, heights</li>
+<li><code>T_unit</code> : <code>NULL</code> or a string, time unit</li>
+<li><code>L_unit</code> : <code>NULL</code> or a string, length
+unit</li>
+</ul>
+<p><code>h[i]</code> is the height at time <code>t[i]</code>.
+<code>h</code> and <code>t</code> must be of same length and have at
+least 2 elements, <code>t</code> must be increasing.</p>
+</div>
+<div id="construction-1" class="section level4">
+<h4>Construction</h4>
+<p>The following functions construct <code>sac</code> objects:</p>
+<p>Standard constructor is <code>tp_to_sac</code> (tie point to sediment
+accumulation curve)</p>
+</div>
+<div id="logic-1" class="section level4">
+<h4>Logic</h4>
+<p>The following functions inspect the logic of <code>sac</code>
+objects:</p>
+<ul>
+<li><code>is_sac</code> to check validity of <code>sac</code>
+object</li>
+</ul>
+</div>
+<div id="representation-1" class="section level4">
+<h4>Representation</h4>
+<p>The following functions yield a representation of <code>sac</code>
+objects:</p>
+<ul>
+<li><code>plot.sac</code> for plotting</li>
+<li><code>print.sac</code> for printing to the console</li>
+</ul>
+</div>
+<div id="modification-1" class="section level4">
+<h4>Modification</h4>
+<p>The following functions modify <code>sac</code> objects:</p>
+<ul>
+<li><code>set_L_unit</code> and <code>set_T_unit</code> to change
+units</li>
+</ul>
+</div>
+<div id="extracting-information-1" class="section level4">
+<h4>Extracting information</h4>
+<p>The following functions extract information from <code>sac</code>
+objects:</p>
+<ul>
+<li><code>get_L_unit</code> and <code>get_T_unit</code> to extract
+units</li>
+</ul>
+</div>
+<div id="transformation-into-other-s3-classes-1" class="section level4">
+<h4>Transformation into other S3 classes</h4>
+<p>The following functions transform <code>sac</code> objects into other
+S3 classes:</p>
+<ul>
+<li><code>sac_to_adm</code> to transform <code>sac</code> into the S3
+class <code>adm</code></li>
+</ul>
+</div>
+</div>
+<div id="s3-class-multiadm" class="section level3">
+<h3>S3 class <code>multiadm</code></h3>
+<div id="description-2" class="section level4">
+<h4>Description</h4>
+<p>The S3 class <code>multiadm</code> represents
+<strong>multi</strong>ple <strong>a</strong>ge <strong>d</strong>epth
+<strong>m</strong>odels.. Structurally, they are lists with the
+following elements:</p>
+<ul>
+<li><code>no_of_entries</code>: Positive integer, number of age depth
+models contained</li>
+<li><code>t</code> list of length <code>no_of_entries</code>. Each
+element contains a numeric vector</li>
+<li><code>h</code>: list of length <code>no_of_entries</code>. Each
+element contain a numeric vector</li>
+<li><code>destr</code>: list of length <code>no_of_entries</code>. Each
+element contain a logic</li>
+<li><code>T_unit</code> : <code>NULL</code> or a string, time unit</li>
+<li><code>L_unit</code> : <code>NULL</code> or a string, length
+unit</li>
+</ul>
+<p><code>h[[i]][j]</code> is the height of the i-th age-depth model at
+time <code>t[[i]][j]</code>. For each <code>i</code>, the quintuple
+<code>h[[i]]</code>, <code>t[[i]]</code>, <code>destr[[i]]</code>,
+<code>T_unit</code> and <code>L_unit</code> specify an <code>adm</code>
+object with the constraints as specified in the section <em>S3 class
+<code>adm</code></em> (e.g., on monotonicity, length, etc.).
+<code>T_unit</code> and <code>L_unit</code> are shared among all
+age-depth models in an <code>multiamd</code> object.</p>
+</div>
+<div id="construction-2" class="section level4">
+<h4>Construction</h4>
+<p>The following functions construct <code>multiadm</code> objects:</p>
+<ul>
+<li><code>merge_adm_to_multiadm</code> to contruct <code>multiadm</code>
+from <code>adm</code> objects</li>
+<li><code>sedrate_to_multiadm</code> construct <code>multiadm</code>
+from info on sedimentation rates, see
+<code>vignette(&quot;adm_from_sedrate&quot;)</code></li>
+<li><code>strat_cont_to_multiadm</code> construct <code>multiadm</code>
+from tracer information, see
+<code>vignette(&quot;adm_from_trace_cont&quot;)</code></li>
+</ul>
+</div>
+<div id="logic-2" class="section level4">
+<h4>Logic</h4>
+<p>The following functions inspect the logic of <code>multiadm</code>
+objects:</p>
+<ul>
+<li><code>is_multiadm</code> to check for validity of multiadm
+object</li>
+</ul>
+</div>
+<div id="representation-2" class="section level4">
+<h4>Representation</h4>
+<p>The following functions yield a representation <code>multiadm</code>
+objects:</p>
+<ul>
+<li><code>plot.multiadm</code> for plotting</li>
+<li><code>print.multiadm</code> for printing to console</li>
+<li><code>summary.multiadm</code> for providing summary statistics</li>
+</ul>
+</div>
+<div id="modification-2" class="section level4">
+<h4>Modification</h4>
+<p>The following functions modify <code>multiadm</code> objects:</p>
+<ul>
+<li><code>merge_multiadm</code> to combine multiple
+<code>multiadm</code> objects</li>
+<li><code>set_L_unit</code> and <code>set_T_unit</code> to change
+units</li>
+</ul>
+</div>
+<div id="extracting-information-2" class="section level4">
+<h4>Extracting information</h4>
+<p>The following functions extract information from
+<code>multiadm</code> objects:</p>
+<ul>
+<li><code>condensation</code> to extract condensation</li>
+<li><code>get_completeness</code> and
+<code>get_incompleteness</code></li>
+<li><code>get_height</code></li>
+<li><code>get_hiat_duration</code></li>
+<li><code>get_hiat_list</code></li>
+<li><code>get_hiat_no</code></li>
+<li><code>get_hiat_pos</code></li>
+<li><code>get_L_unit</code> and <code>get_T_unit</code> to extract
+data</li>
+<li><code>get_time</code></li>
+<li><code>get_total_duration</code></li>
+<li><code>get_total_thickness</code></li>
+<li><code>is_destructive</code></li>
+<li><code>sed_rate_l</code></li>
+<li><code>sed_rate_t</code></li>
+</ul>
+</div>
+<div id="transformation-into-other-s3-classes-2" class="section level4">
+<h4>Transformation into other S3 classes</h4>
+<p>The following functions transform <code>multiadm</code> objects into
+other S3 classes:</p>
+<ul>
+<li><code>split_multiadm</code> to split <code>multiadm</code> into list
+of <code>adm</code> objects</li>
+</ul>
+</div>
+</div>
+</div>
+<div id="methods-implemented-for-external-s3-classes" class="section level2">
+<h2>Methods implemented for external S3 classes</h2>
+<div id="s3-class-list" class="section level3">
+<h3>S3 class <code>list</code></h3>
+<p><code>admtools</code> implements the following methods for
+<code>list</code>:</p>
+<ul>
+<li><code>strat_to_time</code>: Transform strat-val pairs into time
+domain</li>
+<li><code>time_to_strat</code>: Transform time-val pairs into strat
+domain</li>
+</ul>
+</div>
+<div id="s3-class-phylo" class="section level3">
+<h3>S3 class <code>phylo</code></h3>
+<p><code>admtools</code> implements the following methods for
+<code>phylo</code>:</p>
+<ul>
+<li><code>strat_to_time</code>: Transform stratigraphic tree into time
+domain</li>
+<li><code>time_to_strat</code>: Transform time tree into strat
+domain</li>
+</ul>
+</div>
+</div>
+<div id="plotting" class="section level2">
+<h2>Plotting</h2>
+<p>The following functions are used for plotting:</p>
+<ul>
+<li><p><code>plot.adm</code> plotting for S3 class
+<code>adm</code></p></li>
+<li><p><code>plot.multiadm</code> plotting for S3 class
+<code>multiadm</code></p></li>
+<li><p><code>plot.sac</code> plotting for S3 class
+<code>sac</code></p></li>
+<li><p><code>T_axis_lab</code> to annotate time axis</p></li>
+<li><p><code>L_axis_lab</code> to annotate length/depth axis</p></li>
+<li><p><code>plot_sed_rate_l</code> to plot sedimentation rate in
+length/depth domain</p></li>
+<li><p><code>plot_sed_rate_t</code> to plot sedimentation rate in time
+domain</p></li>
+<li><p><code>plot_condensation</code></p></li>
+<li><p><code>plot_erosive_intervals</code> to highlight erosive
+intervals, called after <code>plot.adm</code></p></li>
+</ul>
+<div id="internals" class="section level3">
+<h3>Internals</h3>
+<p>The following functions are used internally and not exposed to users.
+They can be accessed via <code>admtools:::function_name</code>.</p>
+<ul>
+<li><p><code>plot_destr_parts</code></p></li>
+<li><p><code>plot_acc_parts</code></p></li>
+<li><p><code>make_adm_canvas</code></p></li>
+</ul>
+</div>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

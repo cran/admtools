@@ -8,13 +8,64 @@ knitr::opts_chunk$set(
 library(admtools)
 
 ## -----------------------------------------------------------------------------
+h_min = 3 # bottom of section
+h_max = 8 # top of section
+sampling_bin_borders = seq(h_min, h_max, by = 1) # limits of sampling bins
+mean_3He = seq(from = 15, to = 5, length.out = length(sampling_bin_borders) - 1) # assumed 3He mean vals
+sd_3He = runif(n = length(mean_3He), min = 0.1 * mean_3He, max = 0.2 * mean_3He) # standard deviation of 3He
+He_measurements = data.frame("mean" = mean_3He, "sd" = sd_3He)
+
+## -----------------------------------------------------------------------------
+h = seq(h_min, h_max, by = 0.1)
+T_unit = "dimensionless"
+L_unit = "m"
+
+## -----------------------------------------------------------------------------
+tp_height = tp_height_det(heights = c(h_min, h_max))
+
+## -----------------------------------------------------------------------------
+tp_time = tp_time_floating_scale()
+
+## -----------------------------------------------------------------------------
+flux = flux_const()
+
+## -----------------------------------------------------------------------------
+observed_tracer = strat_cont_gen_from_tracer(bin_borders = sampling_bin_borders, 
+                                          df = He_measurements,
+                                          distribution = "normal")
+
+## ----echo=FALSE---------------------------------------------------------------
+plot(NULL,
+     xlim = range(h),
+     ylim = c(0,max(He_measurements$mean) + 2 * max(He_measurements$sd)),
+     xlab = paste("Height [", L_unit, "]", sep = ""),
+     ylab = "3He observed")
+lines(h, observed_tracer()(h), type = "p", col = "red", pch = 3)
+lines(h, observed_tracer()(h), type = "p", col = "blue", pch = 19)
+lines(h, observed_tracer()(h), type = "p", col = "black")
+
+## -----------------------------------------------------------------------------
+my_adm = strat_cont_to_multiadm(h_tp = tp_height,
+                                t_tp = tp_time,
+                                strat_cont_gen = observed_tracer,
+                                time_cont_gen = flux,
+                                h = h,
+                                T_unit = T_unit,
+                                L_unit = L_unit)
+
+## -----------------------------------------------------------------------------
+plot(my_adm, mode = "envelope")
+T_axis_lab()
+L_axis_lab()
+make_legend()
+
+## -----------------------------------------------------------------------------
 h_min = 10 # stratigraphic height of lower tie point [m]
 h_max = 20 # stratigraphic height of upper tie point [m]
 
 ## ----h_tp function------------------------------------------------------------
 h_tp = function(){
-  return(c("h1" = h_min,
-           "h2" = h_max))
+  return(c(h_min, h_max))
 }
 
 ## ----Evaluate stratigraphic positions of tie points---------------------------
@@ -22,29 +73,34 @@ h_tp()
 
 ## -----------------------------------------------------------------------------
 t_tp = function() {
-  # timing first tie point
-  t1 = rnorm(n = 1, mean = 0, sd = 0.5)
-  
-  # timing second tie point
-  t2 = runif(n = 1, min = 9, max = 11)
-  
-  return(c("t1" = t1, "t2" = t2))
+  repeat{ 
+    # timing first tie point
+    t1 = rnorm(n = 1, mean = 0, sd = 0.5)
+    # timing second tie point
+    t2 = runif(n = 1, min = 9, max = 11)
+    if (t1 < t2){ # if order is correct, return values
+        return(c(t1, t2))
+    }
+  }
 }
+
+## -----------------------------------------------------------------------------
+t_tp() # evaluating the function returns a random pair of times drawn from the specified distribution
 
 ## ----echo=FALSE, fig.show="hold"----------------------------------------------
 no_of_samples = 1000
-hist(sapply( seq_len(no_of_samples), function(x) t_tp()["t1"]),
+hist(sapply( seq_len(no_of_samples), function(x) t_tp()[1]),
      freq = FALSE,
      xlab = "Time [Myr]",
      main = "Timing of lower tie point")
-hist(sapply(seq_len(no_of_samples), function(x) t_tp()["t2"]),
+hist(sapply(seq_len(no_of_samples), function(x) t_tp()[2]),
      freq = FALSE,
      xlab = "Time [Myr]",
      main = "Timing of upper tie point")
 
 ## -----------------------------------------------------------------------------
 time_cont_gen = function(){
-  time_cont = function(x) return(rep(1, length(x)))
+  time_cont = function(x) return( rep(1, length(x)))
   return(time_cont)
 }
 
@@ -57,23 +113,26 @@ plot(x = t,
      y = time_cont(t),
      type = "l",
      xlab = "Time [Myr]",
-     ylab = "Tracer Input into the Sediment [1/Myr]")
+     ylab = "Tracer Input into the Sediment [X/Myr]")
 
 
 ## -----------------------------------------------------------------------------
-locations = c("h_1" = h_min, "h_2" = mean(c(h_min, h_max)), "h_3" = h_max)
+h_min = 2
+h_max = 5
+locations = c( h_min,  mean(c(h_min, h_max)),  h_max)
 
 ## -----------------------------------------------------------------------------
-mean_vals = c("mu_1" = 10, "mu_2" = 1, "mu_3" = 8)
-sd_vals = c("sig_1" = 1, "sig_2" = 0.1, "sig_3" = 0.8)
+mean_vals = c(10,  1,  8)
+sd_vals = c( 1, 0.1, 0.8)
 
 ## -----------------------------------------------------------------------------
 strat_cont_gen = function(){
-   loc = locations
+  # draw sample tracer values from specified distributions
    trac_vals = rnorm(n = length(mean_vals),
                      mean = mean_vals,
                      sd = sd_vals)
-   strat_cont = approxfun(x = loc,
+   # define function that linearly interpolates between drawn values
+   strat_cont = approxfun(x = locations,
                           y = trac_vals,
                           yleft = trac_vals[1],
                           yright = trac_vals[3])
@@ -82,7 +141,7 @@ strat_cont_gen = function(){
 
 ## -----------------------------------------------------------------------------
 n = 3 # number of sampled tracer values 
-h = seq(h_min, h_max, by = 0.1) # determine age-depth model every 0.1 m
+h = seq(h_min, h_max, by = 0.1) # determine tracer values every 0.1 m 
 plot(NULL,
      xlim = c(h_min, h_max),
      ylim = c(0, max(mean_vals) +2 * max(sd_vals)),
@@ -90,28 +149,17 @@ plot(NULL,
      ylab = "Measured Tracer [1/m]")
 cols = c("red", "blue", "black")
 for (i in seq_len(n)){
-  strat_cont = strat_cont_gen()
+  strat_cont = strat_cont_gen() # draw sample path from stoch process 
+  # draw sample path
   lines(x = h,
         y = strat_cont(h),
         col = cols[i])
 }
 
 
-## -----------------------------------------------------------------------------
-h = seq(h_min,h_max, by = 0.25) # strat. positions where ADMs are estimated
-no_of_rep = 10 # no. of ADMs estimated
-
-## -----------------------------------------------------------------------------
-my_adm = strat_cont_to_multiadm(h_tp = h_tp,
-                                t_tp = t_tp,
-                                strat_cont_gen = strat_cont_gen,
-                                time_cont_gen = time_cont_gen,
-                                h = h,
-                                no_of_rep = no_of_rep)
-
-## -----------------------------------------------------------------------------
-plot(my_adm)
-
 ## ----eval=FALSE---------------------------------------------------------------
 #  vignette("adm_from_sedrate")
+
+## ----eval=FALSE---------------------------------------------------------------
+#  vignette("admtools_doc")
 

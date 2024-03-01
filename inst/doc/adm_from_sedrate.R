@@ -8,70 +8,126 @@ knitr::opts_chunk$set(
 library(admtools)
 
 ## -----------------------------------------------------------------------------
-t_tp = function(){
-  # first tie point
-  t1 = rnorm(n = 1, mean = -20 , sd = 0.5)
-  
-  # second tie point
-  d1 = rbinom(n = 1, size = 2, prob = 0.5) # fair coin flip for mixture
-  if (d1 == 0){
-    t2 = rnorm(n = 1, mean =  - 5, sd = 0.1)
-  } else {
-    t2 = rnorm(n = 1, mean =  - 7, sd = 0.3)
-  }
-  return(c("t1" = t1, "t2" = t2))
+h_min = 2 # lower boundary of the section
+h_max = 10 # upper boundary of the section
+T_unit = "Myr"
+L_unit = "m"
+
+## -----------------------------------------------------------------------------
+h = seq(h_min, h_max, by = 0.1)
+
+## -----------------------------------------------------------------------------
+h1 = 5
+mean_age = -66
+sd = 0.25 
+
+## -----------------------------------------------------------------------------
+t_tp = tp_time_norm(mean = mean_age, sd = sd)
+
+## -----------------------------------------------------------------------------
+h_tp = tp_height_det(heights = h1)
+
+## -----------------------------------------------------------------------------
+h_tp()
+t_tp()
+
+## -----------------------------------------------------------------------------
+sedrate_max_y = c(2,5,8,5)
+sedrate_max_x = c(1,4,6,10)
+sedrate_min_y = c(1,1,7,0.5)
+sedrate_min_x = sedrate_max_x 
+
+## -----------------------------------------------------------------------------
+sedrate = sed_rate_gen_from_bounds(h_l = sedrate_min_x,
+                                   s_l = sedrate_min_y,
+                                   h_u = sedrate_max_x,
+                                   s_u = sedrate_max_y,
+                                   rate = 1)
+
+## -----------------------------------------------------------------------------
+plot(NULL,
+     xlim = range(h),
+     ylim = c(0, max(c(sedrate_max_y))),
+     xlab = "Height [m]",
+     ylab = "Sedimentation Rate [m/Myr]")
+no_sedrates = 3
+cols = c("red", "blue", "black")
+for (i in seq_len(no_sedrates)){
+  sedrate_sample = sedrate()
+  lines(h, sedrate_sample(h), lwd = 3, col = cols[i])
 }
 
-## ----fig.show="hold", out.width="50%"-----------------------------------------
-no_of_samples = 10000
-# Evaluate timing of tie points
-hist(x = sapply(seq_len(no_of_samples), function(x) t_tp()["t1"]),
-     freq = FALSE,
-     xlab = "Time before present [Myr]",
-     main = "Timing of first tie point")
-hist(x = sapply(seq_len(no_of_samples), function(x) t_tp()["t2"]),
-     freq = FALSE,
-     xlab = "Time before present [Myr]",
-     main = "Timing of second tie point")
-
+## -----------------------------------------------------------------------------
+my_adm = sedrate_to_multiadm(h_tp = h_tp,
+                             t_tp = t_tp,
+                             sed_rate_gen = sedrate,
+                             h = h,
+                             T_unit = T_unit,
+                             L_unit = L_unit)
 
 ## -----------------------------------------------------------------------------
-h_min = 10 # height of tie point 1
-h_max = 85 # height of tie point 2
+plot(my_adm)
 
 ## -----------------------------------------------------------------------------
+h_min = 10 # stratigraphic height of lower tie point [m]
+h_max = 20 # stratigraphic height of upper tie point [m]
+
+## ----h_tp function------------------------------------------------------------
 h_tp = function(){
-  return(c("h1" = h_min, 
-           "h2" = h_max))
+  return(c(h_min, h_max))
 }
 
-## -----------------------------------------------------------------------------
-#Evaluate stratigraphic positions of tie points
+## ----Evaluate stratigraphic positions of tie points---------------------------
 h_tp()
 
 ## -----------------------------------------------------------------------------
-# limits on sed. rates
-lower_limit = c(0.1,2,0.1,10)
-upper_limit = c(0.2,3,2,12)
-
-# strat intervals where sed rates are defined
-s = c(h_min - 1, 30,75, 80, h_max + 1)
+t_tp = function() {
+  repeat{ 
+    # timing first tie point
+    t1 = rnorm(n = 1, mean = 0, sd = 0.5)
+    # timing second tie point
+    t2 = runif(n = 1, min = 9, max = 11)
+    if (t1 < t2){ # if order is correct, return values
+        return(c(t1, t2))
+    }
+  }
+}
 
 ## -----------------------------------------------------------------------------
-# define function factory
-sed_rate_fun = function(){
-  # draw sed rates from uniform distribution
-  aa_1 = c(runif(1,lower_limit[1],upper_limit[1]),
-         runif(1, lower_limit[2],upper_limit[2]),
-         runif(1,lower_limit[3],upper_limit[3]),
-         runif(1, lower_limit[4], upper_limit[4]))
-  aa = c(aa_1, aa_1[4])
-  # define sed rate "realization" based on samples from uniform distribution
- sed_rate_fun = approxfun(x = s,
-                          y = aa,
-                          method = "constant")
- # return the function
- return(sed_rate_fun)
+t_tp() # evaluating the function returns a random pair of times drawn from the specified distribution
+
+## ----echo=FALSE, fig.show="hold"----------------------------------------------
+no_of_samples = 1000
+hist(sapply( seq_len(no_of_samples), function(x) t_tp()[1]),
+     freq = FALSE,
+     xlab = "Time [Myr]",
+     main = "Timing of lower tie point")
+hist(sapply(seq_len(no_of_samples), function(x) t_tp()[2]),
+     freq = FALSE,
+     xlab = "Time [Myr]",
+     main = "Timing of upper tie point")
+
+## -----------------------------------------------------------------------------
+h_min = 10
+h_max = 90
+# limits on sed. rates 
+lower_limit = c(0.1,2,0.1,10) 
+upper_limit = c(0.2,3,2,12)  
+# strat intervals where sed rates are defined 
+s = c(h_min, 30,65, 80, h_max)
+
+## -----------------------------------------------------------------------------
+# define function factory 
+sed_rate_fun = function(){   
+  # draw sed rates from uniform distribution  
+  aa = runif(n = length(lower_limit), min = lower_limit, max = upper_limit)   
+  # define sed rate "realization" based on samples from uniform distribution 
+  sed_rate_fun = approxfun(x = s, 
+                           y = c(aa, aa[length(aa)]), 
+                           method = "constant", 
+                           rule = 2,  
+                          f = 1) 
+  return(sed_rate_fun)
 }
 
 ## -----------------------------------------------------------------------------
@@ -83,29 +139,21 @@ plot(NULL,
 
 no_of_sedrates = 3 # no. of sed rates displayed
 h = seq(h_min,h_max, by = 0.1) # strat. positions where sed rates are plotted
-
+cols = c("red", "blue", "black")
 for (i in seq_len(no_of_sedrates)){
   # generate sed rate from the factory
   sed_rate_sample = sed_rate_fun()
   
   # plot sed rate in the section
-  lines(h, sed_rate_sample(h))
+  lines(h, sed_rate_sample(h), col = cols[i])
 }
-
-## -----------------------------------------------------------------------------
-h = seq(h_min,h_max, by = 1) # strat. positions where ADMs are estimated
-no_of_rep = 10 # no. of ADMs estimated
-
-## -----------------------------------------------------------------------------
-my_adm = sedrate_to_multiadm(h_tp = h_tp(),
-                             t_tp = t_tp(),
-                             sed_rate_gen = sed_rate_fun,
-                             h = h,
-                             no_of_rep = no_of_rep)
-
-## ----echo=FALSE---------------------------------------------------------------
-plot(my_adm)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  vignette("adm_from_trace_cont")
+
+## ----eval=FALSE---------------------------------------------------------------
+#  vignette("admtools_doc")
+
+## ----eval=FALSE---------------------------------------------------------------
+#  browseVignettes(package = "admtools")
 
