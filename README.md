@@ -4,6 +4,9 @@ R package to estimate age-depth models from stratigraphic and sedimentological d
 
 <!-- badges: start -->
   [![R-CMD-check](https://github.com/MindTheGap-ERC/admtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MindTheGap-ERC/admtools/actions/workflows/R-CMD-check.yaml)
+[![fair-software.eu](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu)
+  [![](https://www.r-pkg.org/badges/version/admtools?color=pink)](https://cran.r-project.org/package=admtools)
+ [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.10774574.svg)](https://doi.org/10.5281/zenodo.10774574)
   <!-- badges: end -->
 
 ## Authors
@@ -16,7 +19,13 @@ Orcid: [0000-0003-1559-1838](https://orcid.org/0000-0003-1559-1838)
 
 ## Installation
 
-To install the package from _GitHub_, first install the _remotes_ package
+You can install the package from _CRAN_. For this, run
+
+```R
+install.packages("admtools")
+```
+
+in R. To install the package from _GitHub_, first install the _remotes_ package
 
 ```R
 install.packages("remotes")
@@ -31,13 +40,15 @@ remotes::install_github(repo = "MindTheGap-ERC/admtools",
                         dependencies = TRUE)
 ```
 
-You can also install the package from _CRAN_. For this, run
+To install the latest stable version. To install the version under developemnt, use
 
 ```R
-install.packages("admtools")
+remotes::install_github(repo = "MindTheGap-ERC/admtools",
+                        build_vignettes = TRUE,
+                        ref = "dev",
+                        dependencies = TRUE)
 ```
 
-in R.  
 After installation, you can load the package using
 
 ```R
@@ -65,6 +76,10 @@ GPL-3.0, see LICENSE file for license text.
 ## Copyright
 
 Copyright 2023 Netherlands eScience Center and Utrecht University
+
+## Contribution
+
+For contribution guidelines see the CONTRIBUTING.md file
 
 ## Citation
 

@@ -60,6 +60,10 @@ L_axis_lab()
 make_legend()
 
 ## -----------------------------------------------------------------------------
+mean_adm = mean_adm(my_adm, h)
+plot(mean_adm)
+
+## -----------------------------------------------------------------------------
 h_min = 10 # stratigraphic height of lower tie point [m]
 h_max = 20 # stratigraphic height of upper tie point [m]
 
@@ -159,6 +163,9 @@ for (i in seq_len(n)){
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  vignette("adm_from_sedrate")
+
+## ----eval=FALSE---------------------------------------------------------------
+#  vignette("adm_plotting)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  vignette("admtools_doc")

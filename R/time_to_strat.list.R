@@ -14,9 +14,9 @@ time_to_strat.list = function(obj, x, ...){
   #' @param x an _adm_ object
   #' @param ... options passed to _get_height_
   #' 
-  #' @seealso [strat_to_time.list()] for the transformation from height to time domain
+  #' @seealso [strat_to_time.list()] for the transformation from height to time domain, [time_to_strat.phylo()] and [time_to_strat.numeric()] for transformations of phylogenetic trees and vectors. See [get_height()] for the underlying procedure.
   #' 
-  #' @returns a list with one named element "h" instead of the element "t", containing the stratigraphic positions corresponding to the times inf "t"
+  #' @returns a `stratlist` (inherits from `list`): A list with one named element "h" instead of the element "t", containing the stratigraphic positions corresponding to the times inf "t"
   #' 
   #' @examples
   #' # see vignette("admtools") for an example
@@ -34,6 +34,7 @@ time_to_strat.list = function(obj, x, ...){
   
   li[["h"]]  = get_height(adm, t = li[["t"]], ...)
   li = li[names(li) != "t" ]
+  class(li) = c("stratlist", "list")
   return(li)
   
 }

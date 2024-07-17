@@ -441,6 +441,13 @@ data</li>
 sedimentation rate in height domain</li>
 <li><code>sed_rate_t</code> and <code>sed_rate_t_fun</code> to extract
 sedimentation rate in time domain</li>
+<li><code>max_height.adm</code> extracts highest stratigraphic point in
+adm</li>
+<li><code>min_height.adm</code> extracts lowest stratigaphic point in
+adm</li>
+<li><code>min_time.adm</code> extracts timing of first tie point in adm
+_ <code>max_time.adm</code> extracts timing of last tie point in
+adm</li>
 </ul>
 </div>
 <div id="transformation-into-other-s3-classes" class="section level4">
@@ -626,8 +633,40 @@ other S3 classes:</p>
 <ul>
 <li><code>split_multiadm</code> to split <code>multiadm</code> into list
 of <code>adm</code> objects</li>
+<li><code>mean_adm</code> , <code>median_adm</code> and
+<code>quantile_adm</code> to extract mean, median, and quantile
+age-depth model of <code>adm</code> class.m</li>
 </ul>
 </div>
+</div>
+<div id="s3-classes-stratlist-and-timelist" class="section level3">
+<h3>S3 classes <code>stratlist</code> and <code>timelist</code></h3>
+<p><code>stratlist</code> and <code>timelist</code> inherit from the
+base <code>list</code>. They are list of stratigraphic positions or
+times, associated with other data (e.g. trait values, proxy values)</p>
+</div>
+<div id="description-3" class="section level3">
+<h3>Description</h3>
+<ul>
+<li><code>stratlist</code> is a list with one element named “h”</li>
+<li><code>timelist</code> is a list with one element named “t”</li>
+</ul>
+</div>
+<div id="construction-3" class="section level3">
+<h3>Construction</h3>
+<ul>
+<li><code>stratlist</code> is returned by
+<code>time_to_strat.list</code></li>
+<li><code>timelist</code> is retruned by
+<code>strat_to_time.list</code></li>
+</ul>
+</div>
+<div id="representation-3" class="section level3">
+<h3>Representation</h3>
+<ul>
+<li><code>plot.stratlist</code> for plotting <code>stratlist</code></li>
+<li><code>plot.timelist</code> for plotting <code>timelist</code></li>
+</ul>
 </div>
 </div>
 <div id="methods-implemented-for-external-s3-classes" class="section level2">
@@ -637,9 +676,9 @@ of <code>adm</code> objects</li>
 <p><code>admtools</code> implements the following methods for
 <code>list</code>:</p>
 <ul>
-<li><code>strat_to_time</code>: Transform strat-val pairs into time
+<li><code>strat_to_time.list</code>: Transform strat-val pairs into time
 domain</li>
-<li><code>time_to_strat</code>: Transform time-val pairs into strat
+<li><code>time_to_strat.list</code>: Transform time-val pairs into strat
 domain</li>
 </ul>
 </div>
@@ -648,10 +687,20 @@ domain</li>
 <p><code>admtools</code> implements the following methods for
 <code>phylo</code>:</p>
 <ul>
-<li><code>strat_to_time</code>: Transform stratigraphic tree into time
+<li><code>strat_to_time.phylo</code>: Transform stratigraphic tree into
+time domain</li>
+<li><code>time_to_strat.phylo</code>: Transform time tree into strat
 domain</li>
-<li><code>time_to_strat</code>: Transform time tree into strat
-domain</li>
+</ul>
+</div>
+<div id="class-numeric" class="section level3">
+<h3>Class <code>numeric</code></h3>
+<ul>
+<li><code>strat_to_time.numeric</code>: Transform vectors from
+stratigraphic domain to time domain. Wrapper around
+<code>get_time</code></li>
+<li><code>time_to_strat.numeric</code>: Transform vectors from time to
+stratigraphic domain. Wrapper around <code>get_height</code></li>
 </ul>
 </div>
 </div>
@@ -665,6 +714,10 @@ domain</li>
 <code>multiadm</code></p></li>
 <li><p><code>plot.sac</code> plotting for S3 class
 <code>sac</code></p></li>
+<li><p><code>plot.timelist</code> for plotting
+<code>timelist</code></p></li>
+<li><p><code>plot.stratlist</code> for plotting
+<code>stratlist</code></p></li>
 <li><p><code>T_axis_lab</code> to annotate time axis</p></li>
 <li><p><code>L_axis_lab</code> to annotate length/depth axis</p></li>
 <li><p><code>plot_sed_rate_l</code> to plot sedimentation rate in
@@ -685,6 +738,13 @@ They can be accessed via <code>admtools:::function_name</code>.</p>
 <li><p><code>make_adm_canvas</code></p></li>
 </ul>
 </div>
+</div>
+<div id="vignettes" class="section level2">
+<h2>Vignettes</h2>
+<ul>
+<li><code>browseVignettes(package = &quot;admtools&quot;)</code> to show a list of
+vignettes</li>
+</ul>
 </div>
 </div>
 

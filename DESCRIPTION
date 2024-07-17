@@ -1,6 +1,6 @@
 Package: admtools
 Title: Estimate and Manipulate Age-Depth Models
-Version: 0.2.0
+Version: 0.3.0
 Authors@R: 
     person("Niklas", "Hohmann", , "N.H.Hohmann@uu.nl", role = c("aut", "cre"),
            comment = c(ORCID = "0000-0003-1559-1838"))
@@ -12,15 +12,16 @@ URL: https://github.com/MindTheGap-ERC/admtools,
 BugReports: https://github.com/MindTheGap-ERC/admtools/issues
 License: GPL (>= 3)
 Encoding: UTF-8
-RoxygenNote: 7.2.3
-Depends: R (>= 2.10), ape
+RoxygenNote: 7.3.2
+Depends: R (>= 2.10),
+Imports: ape
 LazyData: true
 Suggests: knitr, rmarkdown, testthat (>= 3.0.0)
 VignetteBuilder: knitr
 Config/testthat/edition: 3
 NeedsCompilation: no
-Packaged: 2024-03-01 14:03:07 UTC; Hohma004
+Packaged: 2024-07-17 16:05:38 UTC; Niklas Hohmann
 Author: Niklas Hohmann [aut, cre] (<https://orcid.org/0000-0003-1559-1838>)
 Maintainer: Niklas Hohmann <N.H.Hohmann@uu.nl>
 Repository: CRAN
-Date/Publication: 2024-03-01 14:22:43 UTC
+Date/Publication: 2024-07-17 16:20:01 UTC

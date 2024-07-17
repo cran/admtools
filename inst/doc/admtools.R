@@ -106,20 +106,18 @@ get_height(my_adm,
 ## -----------------------------------------------------------------------------
 #install.packages("ape") Package for analyses of phylogenetics and evolution
 # see ?ape::rlineage for help
-set.seed(1)
-tree_in_time = ape::rlineage(birth = 1.8,
-                             death = 0.2,
-                             Tmax = 2)
-plot(tree_in_time) # see also ?ape::plot.phylo
+#set.seed(1)
+
+ape::plot.phylo(timetree) # see also ?ape::plot.phylo
 axis(1)
 mtext("Time [Myr]", side = 1, line = 2.5)
 
 ## -----------------------------------------------------------------------------
-tree_in_strat_domain = time_to_strat(obj = tree_in_time,
+tree_in_strat_domain = time_to_strat(obj = timetree,
                                      x = my_adm)
 
 ## -----------------------------------------------------------------------------
-plot(tree_in_strat_domain, direction = "upwards")
+ape::plot.phylo(tree_in_strat_domain, direction = "upwards")
 axis(side = 2)
 mtext("Stratigraphic Height [m]",
       side = 2,
@@ -130,12 +128,12 @@ t = seq(0, 2, by = 0.001) # times
 BM = function(t){
   #" Simulate Brownian motion at times t
   li = list("t" = t,
-            trait_val = cumsum(c(0, rnorm(n = length(t) - 1, mean = 0, sd = sqrt(diff(t))))))
+            "y" = cumsum(c(0, rnorm(n = length(t) - 1, mean = 0, sd = sqrt(diff(t))))))
+  class(li) = c("timelist", "list") # assign class `timelist` for easy plotting, see ?plot.timelist
   return(li)
 }
 evo_list = BM(t)
-plot(x = evo_list$t,
-     y = evo_list$trait_val,
+plot(x = evo_list,
      xlab = "Time [Myr]",
      ylab = "Trait Value",
      type = "l")
@@ -143,8 +141,8 @@ plot(x = evo_list$t,
 ## -----------------------------------------------------------------------------
 strat_list = time_to_strat(obj = evo_list,
                             x = my_adm)
-plot(x = strat_list$h,
-     y = strat_list$trait_val,
+plot(x = strat_list,
+     orientation = "lr",
      type = "l",
      xlab = "Stratigraphic Height [m]",
      ylab = "Trait Value",
@@ -152,6 +150,9 @@ plot(x = strat_list$h,
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  vignette("admtools_doc")
+
+## ----eval=FALSE---------------------------------------------------------------
+#  vignette("adm_plotting)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  vignette("adm_from_sedrate")

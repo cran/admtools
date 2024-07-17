@@ -69,6 +69,10 @@ my_adm = sedrate_to_multiadm(h_tp = h_tp,
 plot(my_adm)
 
 ## -----------------------------------------------------------------------------
+mean_adm = mean_adm(my_adm, h)
+plot(mean_adm)
+
+## -----------------------------------------------------------------------------
 h_min = 10 # stratigraphic height of lower tie point [m]
 h_max = 20 # stratigraphic height of upper tie point [m]
 
@@ -150,6 +154,9 @@ for (i in seq_len(no_of_sedrates)){
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  vignette("adm_from_trace_cont")
+
+## ----eval=FALSE---------------------------------------------------------------
+#  vignette("adm_plotting)
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  vignette("admtools_doc")
