@@ -8,6 +8,9 @@ knitr::opts_chunk$set(
 library(admtools)
 
 ## ----eval=FALSE---------------------------------------------------------------
+#  install.packages("admtools")
+
+## ----eval=FALSE---------------------------------------------------------------
 #  install.packages("remotes")
 #  
 
@@ -16,15 +19,6 @@ library(admtools)
 #                          build_vignettes = TRUE,
 #                          ref = "HEAD",
 #                          dependencies = TRUE)
-
-## ----eval=FALSE---------------------------------------------------------------
-#  remotes::install_github(repo = "MindTheGap-ERC/admtools",
-#                          build_vignettes = TRUE,
-#                          ref = "dev",
-#                          dependencies = TRUE)
-
-## ----eval=FALSE---------------------------------------------------------------
-#  install.packages("admtools")
 
 ## ----eval=FALSE---------------------------------------------------------------
 #  library(admtools)

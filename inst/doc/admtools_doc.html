@@ -445,9 +445,12 @@ sedimentation rate in time domain</li>
 adm</li>
 <li><code>min_height.adm</code> extracts lowest stratigaphic point in
 adm</li>
-<li><code>min_time.adm</code> extracts timing of first tie point in adm
-_ <code>max_time.adm</code> extracts timing of last tie point in
+<li><code>min_time.adm</code> extracts timing of first tie point in
 adm</li>
+<li><code>max_time.adm</code> extracts timing of last tie point in
+adm</li>
+<li><code>get_L_tp</code> and <code>get_T_tp</code> to extract tie
+points.</li>
 </ul>
 </div>
 <div id="transformation-into-other-s3-classes" class="section level4">
@@ -501,6 +504,7 @@ objects:</p>
 <ul>
 <li><code>plot.sac</code> for plotting</li>
 <li><code>print.sac</code> for printing to the console</li>
+<li><code>summary.sac</code> to provide a quick summary</li>
 </ul>
 </div>
 <div id="modification-1" class="section level4">
@@ -518,6 +522,13 @@ objects:</p>
 <ul>
 <li><code>get_L_unit</code> and <code>get_T_unit</code> to extract
 units</li>
+<li><code>get_T_tp</code> and <code>get_L_tp</code> to extract tie
+points</li>
+<li><code>get_total_duration</code> to extract total duration
+covered</li>
+<li><code>get_total_thickness</code></li>
+<li><code>min_time</code> and <code>max_time</code></li>
+<li><code>min_height</code> and <code>max_height</code></li>
 </ul>
 </div>
 <div id="transformation-into-other-s3-classes-1" class="section level4">
@@ -624,6 +635,8 @@ data</li>
 <li><code>is_destructive</code></li>
 <li><code>sed_rate_l</code></li>
 <li><code>sed_rate_t</code></li>
+<li><code>get_T_tp</code> and <code>get_L_tp</code> to extract time and
+length/height tie points</li>
 </ul>
 </div>
 <div id="transformation-into-other-s3-classes-2" class="section level4">
@@ -644,29 +657,29 @@ age-depth model of <code>adm</code> class.m</li>
 <p><code>stratlist</code> and <code>timelist</code> inherit from the
 base <code>list</code>. They are list of stratigraphic positions or
 times, associated with other data (e.g. trait values, proxy values)</p>
-</div>
-<div id="description-3" class="section level3">
-<h3>Description</h3>
+<div id="description-3" class="section level4">
+<h4>Description</h4>
 <ul>
 <li><code>stratlist</code> is a list with one element named “h”</li>
 <li><code>timelist</code> is a list with one element named “t”</li>
 </ul>
 </div>
-<div id="construction-3" class="section level3">
-<h3>Construction</h3>
+<div id="construction-3" class="section level4">
+<h4>Construction</h4>
 <ul>
 <li><code>stratlist</code> is returned by
 <code>time_to_strat.list</code></li>
-<li><code>timelist</code> is retruned by
+<li><code>timelist</code> is returned by
 <code>strat_to_time.list</code></li>
 </ul>
 </div>
-<div id="representation-3" class="section level3">
-<h3>Representation</h3>
+<div id="representation-3" class="section level4">
+<h4>Representation</h4>
 <ul>
 <li><code>plot.stratlist</code> for plotting <code>stratlist</code></li>
 <li><code>plot.timelist</code> for plotting <code>timelist</code></li>
 </ul>
+</div>
 </div>
 </div>
 <div id="methods-implemented-for-external-s3-classes" class="section level2">
