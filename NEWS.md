@@ -1,8 +1,14 @@
+# admtools 0.4.0
+
+* added transformations for S3 class `pre_paleoTS` to integrate with `StratPal` and `paleoTS` package
+
+* added anchoring of age-depth models via `anchor`
+
 # admtools 0.3.1
 
 * more options for sedimentation rate generator `sed_rate_from_matrix`
 
-* abstracted exctraction of tie points
+* abstracted extraction of tie points
 
 * added utility functions for S3 class `sac`
 

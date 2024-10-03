@@ -443,7 +443,7 @@ sedimentation rate in height domain</li>
 sedimentation rate in time domain</li>
 <li><code>max_height.adm</code> extracts highest stratigraphic point in
 adm</li>
-<li><code>min_height.adm</code> extracts lowest stratigaphic point in
+<li><code>min_height.adm</code> extracts lowest stratigraphic point in
 adm</li>
 <li><code>min_time.adm</code> extracts timing of first tie point in
 adm</li>
@@ -461,6 +461,8 @@ S3 classes:</p>
 <li><code>merge_adm_to_multiadm</code> into <code>multiamd</code></li>
 <li><code>add_adm_to_multiadm</code> to add <code>adm</code> to
 <code>multiadm</code></li>
+<li><code>anchor</code> to transform anchor <code>adm</code> at a tie
+point with uncertainty, resulting in a <code>multiadm</code></li>
 </ul>
 </div>
 </div>
@@ -575,8 +577,10 @@ age-depth models in an <code>multiamd</code> object.</p>
 <h4>Construction</h4>
 <p>The following functions construct <code>multiadm</code> objects:</p>
 <ul>
-<li><code>merge_adm_to_multiadm</code> to contruct <code>multiadm</code>
-from <code>adm</code> objects</li>
+<li><code>anchor</code> to construct <code>multiadm</code> from
+uncertain tie points and <code>adm</code> objects.</li>
+<li><code>merge_adm_to_multiadm</code> to construct
+<code>multiadm</code> from <code>adm</code> objects</li>
 <li><code>sedrate_to_multiadm</code> construct <code>multiadm</code>
 from info on sedimentation rates, see
 <code>vignette(&quot;adm_from_sedrate&quot;)</code></li>

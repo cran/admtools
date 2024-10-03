@@ -6,7 +6,7 @@ is_adm = function(x, quietly = TRUE){
   #' @title Is an adm object a valid age-depth model
   #' 
   #' @description
-    #' Contructors for adm objects such as _tp_to_adm_ do not check whether the inputs define a valid
+    #' Constructors for adm objects such as _tp_to_adm_ do not check whether the inputs define a valid
     #' age-depth mode, e.g. one where the law of superposition holds. This function performs these checks 
     #' 
   #' 
@@ -15,6 +15,13 @@ is_adm = function(x, quietly = TRUE){
   #' 
   #' @returns logical. Is the input a valid adm object?
   #' 
+  #' 
+  #' @examples
+    #' 
+    #' x = tp_to_adm(t = c(2,1), h = c(1,2)) # reversed order of time tie points
+    #' is_adm(x) # returns FALSE
+    #' 
+    #' 
 
   
   warning_status = getOption("warn")
