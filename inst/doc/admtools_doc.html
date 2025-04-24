@@ -463,6 +463,8 @@ S3 classes:</p>
 <code>multiadm</code></li>
 <li><code>anchor</code> to transform anchor <code>adm</code> at a tie
 point with uncertainty, resulting in a <code>multiadm</code></li>
+<li><code>adm_to_ddc</code> to construct a depth-depth curve from two
+age-depth models</li>
 </ul>
 </div>
 </div>
@@ -539,7 +541,7 @@ covered</li>
 S3 classes:</p>
 <ul>
 <li><code>sac_to_adm</code> to transform <code>sac</code> into the S3
-class <code>adm</code></li>
+class <code>adm</code>.</li>
 </ul>
 </div>
 </div>
@@ -656,19 +658,81 @@ age-depth model of <code>adm</code> class.m</li>
 </ul>
 </div>
 </div>
+<div id="s3-class-ddc" class="section level3">
+<h3>S3 class <code>ddc</code></h3>
+<div id="description-3" class="section level4">
+<h4>Description</h4>
+<p>The class <code>ddc</code> describes
+<strong>d</strong>epth-<strong>d</strong>epth <strong>c</strong>urves
+used for correlation between sections. They are lists with the following
+components:</p>
+<ul>
+<li><code>h1</code>: numeric vector, heights in section 1</li>
+<li><code>h2</code>: numeric vector, heights in section 2. Elements at
+the same position in <code>h1</code> and <code>h2</code> are coeval
+heights in the two sections</li>
+<li><code>L_unit_1</code>: NULL or character, length unit of heights in
+section 1</li>
+<li><code>L_unit_2</code>: NULL or character, length unit of heights in
+section 2</li>
+<li><code>sec_1_name</code>: NULL or character, name of section 1</li>
+<li><code>sec_2_name</code>: NULL or character, name of section 2</li>
+</ul>
+</div>
+<div id="construction-3" class="section level4">
+<h4>Construction</h4>
+<p><code>ddc</code> can be constructed using</p>
+<ul>
+<li><code>adm_to_ddc</code> to construct a depth-depth curve from two
+age-depth models</li>
+<li><code>tp_to_ddc</code> to construct a depth-depth curve from coeval
+tie points</li>
+</ul>
+</div>
+<div id="logic-3" class="section level4">
+<h4>Logic</h4>
+<p>Not implemented yet</p>
+</div>
+<div id="representation-3" class="section level4">
+<h4>Representation</h4>
+<ul>
+<li><code>plot.ddc</code> for plotting depth-depth curves</li>
+<li><code>summary.ddc</code> for a quick summary of the ddc object</li>
+</ul>
+</div>
+<div id="modification-3" class="section level4">
+<h4>Modification</h4>
+<ul>
+<li><code>flip_ddc</code> to reverse direction of correlation</li>
+<li><code>set_L_units</code> to change length units</li>
+</ul>
+</div>
+<div id="extracting-information-3" class="section level4">
+<h4>Extracting information</h4>
+<ul>
+<li><code>get_L_units</code> to extract length units</li>
+<li><code>get_total_thicknesses</code> to determine total thickness of
+correlated functions</li>
+</ul>
+</div>
+<div id="transformation-into-other-s3-classes-3" class="section level4">
+<h4>Transformation into other S3 classes</h4>
+<p>Not implemented yet</p>
+</div>
+</div>
 <div id="s3-classes-stratlist-and-timelist" class="section level3">
 <h3>S3 classes <code>stratlist</code> and <code>timelist</code></h3>
 <p><code>stratlist</code> and <code>timelist</code> inherit from the
 base <code>list</code>. They are list of stratigraphic positions or
 times, associated with other data (e.g. trait values, proxy values)</p>
-<div id="description-3" class="section level4">
+<div id="description-4" class="section level4">
 <h4>Description</h4>
 <ul>
 <li><code>stratlist</code> is a list with one element named “h”</li>
 <li><code>timelist</code> is a list with one element named “t”</li>
 </ul>
 </div>
-<div id="construction-3" class="section level4">
+<div id="construction-4" class="section level4">
 <h4>Construction</h4>
 <ul>
 <li><code>stratlist</code> is returned by
@@ -677,7 +741,7 @@ times, associated with other data (e.g. trait values, proxy values)</p>
 <code>strat_to_time.list</code></li>
 </ul>
 </div>
-<div id="representation-3" class="section level4">
+<div id="representation-4" class="section level4">
 <h4>Representation</h4>
 <ul>
 <li><code>plot.stratlist</code> for plotting <code>stratlist</code></li>
@@ -708,6 +772,18 @@ domain</li>
 time domain</li>
 <li><code>time_to_strat.phylo</code>: Transform time tree into strat
 domain</li>
+</ul>
+</div>
+<div id="s3-class-pre_paleots" class="section level3">
+<h3>S3 class <code>pre_paleoTS</code></h3>
+<p><code>admtools</code> implements the following methods for
+<code>pre_paleoTS</code> objects as defined by the <code>StratPal</code>
+package:</p>
+<ul>
+<li><p><code>strat_to_time.pre_paleoTS</code>: transform pre-paleoTS
+time series into time domain</p></li>
+<li><p><code>time_to_strat.pre_paleoTS</code>: transform pre-paleoTS
+time series into strat. domain</p></li>
 </ul>
 </div>
 <div id="class-numeric" class="section level3">

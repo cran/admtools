@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<meta charset="utf-8" />
+<meta name="generator" content="pandoc" />
+<meta http-equiv="X-UA-Compatible" content="IE=EDGE" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+
+
+<title>Depth-depth curves and correlation</title>
+
+<script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
+// be compatible with the behavior of Pandoc < 2.8).
+document.addEventListener('DOMContentLoaded', function(e) {
+  var hs = document.querySelectorAll("div.section[class*='level'] > :first-child");
+  var i, h, a;
+  for (i = 0; i < hs.length; i++) {
+    h = hs[i];
+    if (!/^h[1-6]$/i.test(h.tagName)) continue;  // it should be a header h1-h6
+    a = h.attributes;
+    while (a.length > 0) h.removeAttribute(a[0].name);
+  }
+});
+</script>
+
+<style type="text/css">
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+span.underline{text-decoration: underline;}
+div.column{display: inline-block; vertical-align: top; width: 50%;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+</style>
+
+
+
+<style type="text/css">
+code {
+white-space: pre;
+}
+.sourceCode {
+overflow: visible;
+}
+</style>
+<style type="text/css" data-origin="pandoc">
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+{ counter-reset: source-line 0; }
+pre.numberSource code > span
+{ position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+{ content: counter(source-line);
+position: relative; left: -1em; text-align: right; vertical-align: baseline;
+border: none; display: inline-block;
+-webkit-touch-callout: none; -webkit-user-select: none;
+-khtml-user-select: none; -moz-user-select: none;
+-ms-user-select: none; user-select: none;
+padding: 0 4px; width: 4em;
+color: #aaaaaa;
+}
+pre.numberSource { margin-left: 3em; border-left: 1px solid #aaaaaa; padding-left: 4px; }
+div.sourceCode
+{ }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+code span.al { color: #ff0000; font-weight: bold; } 
+code span.an { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.at { color: #7d9029; } 
+code span.bn { color: #40a070; } 
+code span.bu { color: #008000; } 
+code span.cf { color: #007020; font-weight: bold; } 
+code span.ch { color: #4070a0; } 
+code span.cn { color: #880000; } 
+code span.co { color: #60a0b0; font-style: italic; } 
+code span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.do { color: #ba2121; font-style: italic; } 
+code span.dt { color: #902000; } 
+code span.dv { color: #40a070; } 
+code span.er { color: #ff0000; font-weight: bold; } 
+code span.ex { } 
+code span.fl { color: #40a070; } 
+code span.fu { color: #06287e; } 
+code span.im { color: #008000; font-weight: bold; } 
+code span.in { color: #60a0b0; font-weight: bold; font-style: italic; } 
+code span.kw { color: #007020; font-weight: bold; } 
+code span.op { color: #666666; } 
+code span.ot { color: #007020; } 
+code span.pp { color: #bc7a00; } 
+code span.sc { color: #4070a0; } 
+code span.ss { color: #bb6688; } 
+code span.st { color: #4070a0; } 
+code span.va { color: #19177c; } 
+code span.vs { color: #4070a0; } 
+code span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } 
+</style>
+<script>
+// apply pandoc div.sourceCode style to pre.sourceCode instead
+(function() {
+  var sheets = document.styleSheets;
+  for (var i = 0; i < sheets.length; i++) {
+    if (sheets[i].ownerNode.dataset["origin"] !== "pandoc") continue;
+    try { var rules = sheets[i].cssRules; } catch (e) { continue; }
+    var j = 0;
+    while (j < rules.length) {
+      var rule = rules[j];
+      // check if there is a div.sourceCode rule
+      if (rule.type !== rule.STYLE_RULE || rule.selectorText !== "div.sourceCode") {
+        j++;
+        continue;
+      }
+      var style = rule.style.cssText;
+      // check if color or background-color is set
+      if (rule.style.color === '' && rule.style.backgroundColor === '') {
+        j++;
+        continue;
+      }
+      // replace div.sourceCode by a pre.sourceCode rule
+      sheets[i].deleteRule(j);
+      sheets[i].insertRule('pre.sourceCode{' + style + '}', j);
+    }
+  }
+})();
+</script>
+
+
+
+
+<style type="text/css">body {
+background-color: #fff;
+margin: 1em auto;
+max-width: 700px;
+overflow: visible;
+padding-left: 2em;
+padding-right: 2em;
+font-family: "Open Sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+font-size: 14px;
+line-height: 1.35;
+}
+#TOC {
+clear: both;
+margin: 0 0 10px 10px;
+padding: 4px;
+width: 400px;
+border: 1px solid #CCCCCC;
+border-radius: 5px;
+background-color: #f6f6f6;
+font-size: 13px;
+line-height: 1.3;
+}
+#TOC .toctitle {
+font-weight: bold;
+font-size: 15px;
+margin-left: 5px;
+}
+#TOC ul {
+padding-left: 40px;
+margin-left: -1.5em;
+margin-top: 5px;
+margin-bottom: 5px;
+}
+#TOC ul ul {
+margin-left: -2em;
+}
+#TOC li {
+line-height: 16px;
+}
+table {
+margin: 1em auto;
+border-width: 1px;
+border-color: #DDDDDD;
+border-style: outset;
+border-collapse: collapse;
+}
+table th {
+border-width: 2px;
+padding: 5px;
+border-style: inset;
+}
+table td {
+border-width: 1px;
+border-style: inset;
+line-height: 18px;
+padding: 5px 5px;
+}
+table, table th, table td {
+border-left-style: none;
+border-right-style: none;
+}
+table thead, table tr.even {
+background-color: #f7f7f7;
+}
+p {
+margin: 0.5em 0;
+}
+blockquote {
+background-color: #f6f6f6;
+padding: 0.25em 0.75em;
+}
+hr {
+border-style: solid;
+border: none;
+border-top: 1px solid #777;
+margin: 28px 0;
+}
+dl {
+margin-left: 0;
+}
+dl dd {
+margin-bottom: 13px;
+margin-left: 13px;
+}
+dl dt {
+font-weight: bold;
+}
+ul {
+margin-top: 0;
+}
+ul li {
+list-style: circle outside;
+}
+ul ul {
+margin-bottom: 0;
+}
+pre, code {
+background-color: #f7f7f7;
+border-radius: 3px;
+color: #333;
+white-space: pre-wrap; 
+}
+pre {
+border-radius: 3px;
+margin: 5px 0px 10px 0px;
+padding: 10px;
+}
+pre:not([class]) {
+background-color: #f7f7f7;
+}
+code {
+font-family: Consolas, Monaco, 'Courier New', monospace;
+font-size: 85%;
+}
+p > code, li > code {
+padding: 2px 0px;
+}
+div.figure {
+text-align: center;
+}
+img {
+background-color: #FFFFFF;
+padding: 2px;
+border: 1px solid #DDDDDD;
+border-radius: 3px;
+border: 1px solid #CCCCCC;
+margin: 0 5px;
+}
+h1 {
+margin-top: 0;
+font-size: 35px;
+line-height: 40px;
+}
+h2 {
+border-bottom: 4px solid #f7f7f7;
+padding-top: 10px;
+padding-bottom: 2px;
+font-size: 145%;
+}
+h3 {
+border-bottom: 2px solid #f7f7f7;
+padding-top: 10px;
+font-size: 120%;
+}
+h4 {
+border-bottom: 1px solid #f7f7f7;
+margin-left: 8px;
+font-size: 105%;
+}
+h5, h6 {
+border-bottom: 1px solid #ccc;
+font-size: 105%;
+}
+a {
+color: #0033dd;
+text-decoration: none;
+}
+a:hover {
+color: #6666ff; }
+a:visited {
+color: #800080; }
+a:visited:hover {
+color: #BB00BB; }
+a[href^="http:"] {
+text-decoration: underline; }
+a[href^="https:"] {
+text-decoration: underline; }
+
+code > span.kw { color: #555; font-weight: bold; } 
+code > span.dt { color: #902000; } 
+code > span.dv { color: #40a070; } 
+code > span.bn { color: #d14; } 
+code > span.fl { color: #d14; } 
+code > span.ch { color: #d14; } 
+code > span.st { color: #d14; } 
+code > span.co { color: #888888; font-style: italic; } 
+code > span.ot { color: #007020; } 
+code > span.al { color: #ff0000; font-weight: bold; } 
+code > span.fu { color: #900; font-weight: bold; } 
+code > span.er { color: #a61717; background-color: #e3d2d2; } 
+</style>
+
+
+
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">Depth-depth curves and correlation</h1>
+
+
+
+<div id="depth-depth-curves-and-correlation" class="section level2">
+<h2>Depth-depth curves and correlation</h2>
+<div class="sourceCode" id="cb1"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" tabindex="-1"></a><span class="fu">library</span>(admtools)</span></code></pre></div>
+<p><code>admtools</code> comes with utilities to deal with depth-depth
+curves that are used for correlation between sections. See the developer
+documentation (<code>vignette(&quot;admtools_doc&quot;)</code>) for all available
+functionality.</p>
+<div id="constructing-depth-depth-curves" class="section level3">
+<h3>Constructing depth-depth curves</h3>
+<p>There are two ways to construct depth-depth curves: from coeval tie
+points or from age-depth models. To construct depth-depth curves from
+coeval tie points use <code>tp_to_ddc</code> (ddc stands for depth-depth
+curve).</p>
+<div class="sourceCode" id="cb2"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb2-1"><a href="#cb2-1" tabindex="-1"></a><span class="co"># simulation data</span></span>
+<span id="cb2-2"><a href="#cb2-2" tabindex="-1"></a><span class="co"># entries in vectors are coeval bc simulation time steps were identical</span></span>
+<span id="cb2-3"><a href="#cb2-3" tabindex="-1"></a>h1 <span class="ot">=</span> CarboCATLite_data<span class="sc">$</span>height_2_km_offshore_m</span>
+<span id="cb2-4"><a href="#cb2-4" tabindex="-1"></a>h2 <span class="ot">=</span> CarboCATLite_data<span class="sc">$</span>height_12_km_offshore_m</span>
+<span id="cb2-5"><a href="#cb2-5" tabindex="-1"></a>ddc1 <span class="ot">=</span> <span class="fu">tp_to_ddc</span>(<span class="at">h1 =</span> h1,</span>
+<span id="cb2-6"><a href="#cb2-6" tabindex="-1"></a>                 <span class="at">h2 =</span> h2,</span>
+<span id="cb2-7"><a href="#cb2-7" tabindex="-1"></a>                 <span class="at">L_unit_1 =</span> <span class="st">&quot;m&quot;</span>, <span class="co"># associate length units</span></span>
+<span id="cb2-8"><a href="#cb2-8" tabindex="-1"></a>                 <span class="at">L_unit_2 =</span> <span class="st">&quot;m&quot;</span>,</span>
+<span id="cb2-9"><a href="#cb2-9" tabindex="-1"></a>                 <span class="at">sec_1 =</span> <span class="st">&quot;2 km offshore&quot;</span>, <span class="co"># name of correlated sections</span></span>
+<span id="cb2-10"><a href="#cb2-10" tabindex="-1"></a>                 <span class="at">sec_2 =</span> <span class="st">&quot;12 km offshore&quot;</span>)</span></code></pre></div>
+<p>Alternatively, you can use two age-depth models to construct
+depth-depth curves via <code>adm_to_ddc</code>. This will construct
+depth-depth curves for the overlapping time interval.</p>
+<div class="sourceCode" id="cb3"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" tabindex="-1"></a>adm_2km <span class="ot">=</span> <span class="fu">tp_to_adm</span>(<span class="at">t =</span> CarboCATLite_data<span class="sc">$</span>time_myr,</span>
+<span id="cb3-2"><a href="#cb3-2" tabindex="-1"></a>                    <span class="at">h =</span> CarboCATLite_data<span class="sc">$</span>height_2_km_offshore_m,</span>
+<span id="cb3-3"><a href="#cb3-3" tabindex="-1"></a>                    <span class="at">L_unit =</span> <span class="st">&quot;m&quot;</span>,</span>
+<span id="cb3-4"><a href="#cb3-4" tabindex="-1"></a>                    <span class="at">T_unit =</span> <span class="st">&quot;Myr&quot;</span>)</span>
+<span id="cb3-5"><a href="#cb3-5" tabindex="-1"></a></span>
+<span id="cb3-6"><a href="#cb3-6" tabindex="-1"></a>adm_8km <span class="ot">=</span> <span class="fu">tp_to_adm</span>(<span class="at">t =</span> CarboCATLite_data<span class="sc">$</span>time_myr,</span>
+<span id="cb3-7"><a href="#cb3-7" tabindex="-1"></a>                    <span class="at">h =</span> CarboCATLite_data<span class="sc">$</span>height_8_km_offshore_m,</span>
+<span id="cb3-8"><a href="#cb3-8" tabindex="-1"></a>                    <span class="at">L_unit =</span> <span class="st">&quot;m&quot;</span>,</span>
+<span id="cb3-9"><a href="#cb3-9" tabindex="-1"></a>                    <span class="at">T_unit =</span> <span class="st">&quot;Myr&quot;</span>)</span>
+<span id="cb3-10"><a href="#cb3-10" tabindex="-1"></a></span>
+<span id="cb3-11"><a href="#cb3-11" tabindex="-1"></a>ddc2 <span class="ot">=</span> <span class="fu">adm_to_ddc</span>(<span class="at">adm1 =</span> adm_2km, <span class="at">adm2 =</span> adm_8km)</span>
+<span id="cb3-12"><a href="#cb3-12" tabindex="-1"></a><span class="co"># assign section names</span></span>
+<span id="cb3-13"><a href="#cb3-13" tabindex="-1"></a>ddc2 <span class="ot">=</span> <span class="fu">set_section_names</span>(ddc2, <span class="at">sec_names =</span> <span class="fu">c</span>(<span class="st">&quot;2 km from shore&quot;</span>, <span class="st">&quot;8 km from shore&quot;</span>))</span></code></pre></div>
+</div>
+<div id="plotting-and-summaries" class="section level3">
+<h3>Plotting and summaries</h3>
+<p>You can quickly plot depth-depth curves using <code>plot</code>:</p>
+<div class="sourceCode" id="cb4"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb4-1"><a href="#cb4-1" tabindex="-1"></a><span class="fu">plot</span>(ddc1,</span>
+<span id="cb4-2"><a href="#cb4-2" tabindex="-1"></a>     <span class="at">type =</span> <span class="st">&quot;l&quot;</span>,</span>
+<span id="cb4-3"><a href="#cb4-3" tabindex="-1"></a>     <span class="at">xlab =</span> <span class="st">&quot;&quot;</span>,</span>
+<span id="cb4-4"><a href="#cb4-4" tabindex="-1"></a>     <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>)</span>
+<span id="cb4-5"><a href="#cb4-5" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">get_section_names</span>(ddc1)[<span class="dv">1</span>], <span class="at">side =</span> <span class="dv">1</span>, <span class="at">line =</span> <span class="dv">3</span>)</span>
+<span id="cb4-6"><a href="#cb4-6" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">get_section_names</span>(ddc1)[<span class="dv">2</span>], <span class="at">side =</span> <span class="dv">2</span>, <span class="at">line =</span> <span class="dv">3</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>A quick overview of the contents is provided via
+<code>summary</code>:</p>
+<div class="sourceCode" id="cb5"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" tabindex="-1"></a><span class="fu">summary</span>(ddc1)</span></code></pre></div>
+<pre><code>## depth-depth curve between 2 km offshore and 12 km offshore 
+## Thickness of 2 km offshore : 146.0621 m 
+## Thickness of 12 km offshore : 16.51814 m</code></pre>
+</div>
+<div id="modification" class="section level3">
+<h3>Modification</h3>
+<p>Length units and section names can be extracted and modified using
+<code>get_L_units</code>, <code>set_L_units</code>,
+<code>get_section_names</code> and <code>set_section_names</code>. To
+reverse the direction of correlation, use <code>flip_ddc</code>:</p>
+<div class="sourceCode" id="cb7"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" tabindex="-1"></a><span class="fu">plot</span>(ddc1, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>) <span class="co"># correlation from 2 km offshore to 12 km offshore</span></span>
+<span id="cb7-2"><a href="#cb7-2" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">get_section_names</span>(ddc1)[<span class="dv">1</span>], <span class="at">side =</span> <span class="dv">1</span>, <span class="at">line =</span> <span class="dv">3</span>)</span>
+<span id="cb7-3"><a href="#cb7-3" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">get_section_names</span>(ddc1)[<span class="dv">2</span>], <span class="at">side =</span> <span class="dv">2</span>, <span class="at">line =</span> <span class="dv">3</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<div class="sourceCode" id="cb8"><pre class="sourceCode r"><code class="sourceCode r"><span id="cb8-1"><a href="#cb8-1" tabindex="-1"></a>ddc3 <span class="ot">=</span> <span class="fu">flip_ddc</span>(ddc1)</span>
+<span id="cb8-2"><a href="#cb8-2" tabindex="-1"></a><span class="fu">plot</span>(ddc3, <span class="at">type =</span> <span class="st">&quot;l&quot;</span>, <span class="at">xlab =</span> <span class="st">&quot;&quot;</span>, <span class="at">ylab =</span> <span class="st">&quot;&quot;</span>) <span class="co"># correlates 12 km offshore with 2 km offshore</span></span>
+<span id="cb8-3"><a href="#cb8-3" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">get_section_names</span>(ddc3)[<span class="dv">1</span>], <span class="at">side =</span> <span class="dv">1</span>, <span class="at">line =</span> <span class="dv">3</span>)</span>
+<span id="cb8-4"><a href="#cb8-4" tabindex="-1"></a><span class="fu">mtext</span>(<span class="fu">get_section_names</span>(ddc3)[<span class="dv">2</span>], <span class="at">side =</span> <span class="dv">2</span>, <span class="at">line =</span> <span class="dv">3</span>)</span></code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>Note that this effectively flips the plot along the diagonal.</p>
+</div>
+</div>
+
+
+
+<!-- code folding -->
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
