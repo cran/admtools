@@ -24,11 +24,18 @@ f = FossilSim::sim.fossils.poisson(rate = 4, taxonomy = s)
 FossilSim:::plot.fossils(f, tree = t, taxonomy = s, show.taxonomy = TRUE)
 
 ## transform everything into the strat domain
-t_strat = time_to_strat(t, my_adm)
-s_strat = time_to_strat(s, my_adm, destructive = FALSE)
-f_strat = time_to_strat(f, my_adm, destructive = FALSE)
+t_strat = time_to_strat(t, my_adm) # no transformation of time to age required
+s_strat = s |>  # taxonomy object in the time domain
+  rev_dir(ref = max_time(my_adm)) |> # convert age to time
+  time_to_strat( my_adm, destructive = FALSE) |> # transform using age-depth model
+  rev_dir(ref = max_height(my_adm)) # transform back into age
+f_strat =  f |> # same here
+  rev_dir(ref = max_time(my_adm)) |>
+  time_to_strat( my_adm, destructive = TRUE)|> # destroy fossils coinciding with gaps
+  rev_dir(ref = max_height(my_adm))
+
 FossilSim:::plot.fossils(f_strat, tree = t_strat, taxonomy = s_strat, show.taxonomy = TRUE)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("paleotree", package = "FossilSim")
+# vignette("paleotree", package = "FossilSim")
 

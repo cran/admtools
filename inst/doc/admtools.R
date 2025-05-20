@@ -8,34 +8,34 @@ knitr::opts_chunk$set(
 library(admtools)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  install.packages("admtools")
+# install.packages("admtools")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  install.packages("remotes")
-#  
+# install.packages("remotes")
+# 
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  remotes::install_github(repo = "MindTheGap-ERC/admtools",
-#                          build_vignettes = TRUE,
-#                          ref = "HEAD",
-#                          dependencies = TRUE)
+# remotes::install_github(repo = "MindTheGap-ERC/admtools",
+#                         build_vignettes = TRUE,
+#                         ref = "HEAD",
+#                         dependencies = TRUE)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  library(admtools)
+# library(admtools)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  help(package = "admtools")
+# help(package = "admtools")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  ?admtools
+# ?admtools
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  browseVignettes(package = "admtools") # opens in Browser
-#  #or
-#  vignette(package = "admtools")
+# browseVignettes(package = "admtools") # opens in Browser
+# #or
+# vignette(package = "admtools")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  ?CarboCATLite_data
+# ?CarboCATLite_data
 
 ## -----------------------------------------------------------------------------
 # see ?tp_to_adm for detailed documentation
@@ -143,17 +143,17 @@ plot(x = strat_list,
      main = "Trait Evolution 2 km Offshore")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("admtools_doc")
+# vignette("admtools_doc")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("adm_plotting)
+# vignette("adm_plotting)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("adm_from_sedrate")
+# vignette("adm_from_sedrate")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("adm_from_trace_cont")
+# vignette("adm_from_trace_cont")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("correlation")
+# vignette("correlation")
 

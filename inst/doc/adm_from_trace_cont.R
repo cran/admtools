@@ -162,11 +162,11 @@ for (i in seq_len(n)){
 
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("adm_from_sedrate")
+# vignette("adm_from_sedrate")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("adm_plotting)
+# vignette("adm_plotting)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("admtools_doc")
+# vignette("admtools_doc")
 

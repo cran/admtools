@@ -153,14 +153,14 @@ for (i in seq_len(no_of_sedrates)){
 }
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("adm_from_trace_cont")
+# vignette("adm_from_trace_cont")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("adm_plotting)
+# vignette("adm_plotting)
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  vignette("admtools_doc")
+# vignette("admtools_doc")
 
 ## ----eval=FALSE---------------------------------------------------------------
-#  browseVignettes(package = "admtools")
+# browseVignettes(package = "admtools")
 
