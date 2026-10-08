@@ -6,12 +6,16 @@ R package to estimate age-depth models from stratigraphic and sedimentological d
   [![R-CMD-check](https://github.com/MindTheGap-ERC/admtools/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/MindTheGap-ERC/admtools/actions/workflows/R-CMD-check.yaml)
 [![fair-software.eu](https://img.shields.io/badge/fair--software.eu-%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8F%20%20%E2%97%8B-yellow)](https://fair-software.eu)
   [![](https://www.r-pkg.org/badges/version/admtools?color=pink)](https://cran.r-project.org/package=admtools)
-[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.13888709.svg)](https://doi.org/10.5281/zenodo.13888709)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15479049.svg)](https://doi.org/10.5281/zenodo.15479049)
   <!-- badges: end -->
 
 ## Authors
 
-__Niklas Hohmann__  
+__Emilia Jarochowska__ (maintainer)  
+Universität Münster  
+ORCID: [0000-0001-8937-9405](https://orcid.org/0000-0001-8937-9405)
+
+__Niklas Hohmann__ (creator)    
 Utrecht University  
 email: n.h.hohmann [at] uu.nl  
 Web page: [uu.nl/staff/NHohmann](https://www.uu.nl/staff/NHHohmann)  
@@ -85,7 +89,7 @@ For contribution guidelines see the CONTRIBUTING.md file
 
 To cite the package, use
 
-* Hohmann, N. (2025). admtools (v0.5.0). Zenodo. https://doi.org/10.5281/zenodo.15279284
+* Hohmann, N. (2025). admtools (v0.6.0). Zenodo. https://doi.org/10.5281/zenodo.15479049
 
 or run
 
